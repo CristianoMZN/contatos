@@ -6,7 +6,7 @@ Restauração do MYSQL
 - Configurar o arquivo conf.php
 - Substitua os valores entre cerquilha pelos falores reais:
 
-Edição do 'conf.php'
+Edição do 'config.php'
 --------------------
 
 
