@@ -6,7 +6,11 @@ Restauração do MYSQL
 - Configurar o arquivo conf.php
 - Substitua os valores entre cerquilha pelos falores reais:
 
-.. code-block::
+Edição do 'conf.php'
+--------------------
+
+
+.. code-block:: php
 
 define('DB_SERVER','#HOSTNAME#');
 define('DB_USER','#USUARIO#');
@@ -16,7 +20,8 @@ define('DB_NAME','#BANCO#');
 
 *Exempo de uma configuração real:*
 
-.. code-block::
+
+.. code-block:: php
 
 define('DB_SERVER','localhost');
 define('DB_USER','root');
