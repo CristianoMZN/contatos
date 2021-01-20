@@ -14,7 +14,8 @@ Edição do 'config.php'
 ------------------------
 
  
- 
+
+- Renomeie o arquivo *config-new.php* para *config.php* 
 
 - Altere os valores fictícios que estão entre cerquilhas "#" do arquivo *config.php* por valores reais. 
 
