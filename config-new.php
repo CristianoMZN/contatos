@@ -1,10 +1,11 @@
 <?php
 // Definando constantes do banco
 
-define('DB_SERVER','#HOSTNAME#');
+define('DB_SERVER','#SERVIDOR#');
 define('DB_USER','#USUARIO#');
+// deixe em branco de não tiver
 define('DB_PASSWORD','#SENHA#');
-define('DB_NAME','#BANCO#');
+define('DB_NAME','#BANCODEDADOS#');
 
 // Faz a conexão com o banco
 
