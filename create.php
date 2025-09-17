@@ -11,22 +11,24 @@
              </script>";
     } else {
         require_once "config.php";
-        $sql = "INSERT INTO cadastros (nome, telefone, email) VALUES ('$inputNome', '$inputTelefone', '$inputEmail')";
-        if(mysqli_query($link, $sql)){
-            mysqli_close($link);
-            echo "<script>
-                alert('Dados gravados com sucesso!');
-                history.back();
-             </script>";
-        } else {
-            echo "Erro, a gravação no banco de dados nao pode ser feita. <br>" . mysqli_error($link);
-        }             mysqli_close($link);
-
+        
+        // Inserção usando PDO com prepared statements
+        $sql = "INSERT INTO cadastros (nome, telefone, email) VALUES (:nome, :telefone, :email)";
+        try {
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':nome', $inputNome);
+            $stmt->bindParam(':telefone', $inputTelefone);
+            $stmt->bindParam(':email', $inputEmail);
+            
+            if($stmt->execute()){
+                echo "<script>
+                    alert('Dados gravados com sucesso!');
+                    history.back();
+                 </script>";
+            }
+        } catch(PDOException $e) {
+            echo "Erro, a gravação no banco de dados não pode ser feita. <br>" . $e->getMessage();
+        }
     }
-
-    // Definindo arquivo PHP
-
-
-
 ?>
 
