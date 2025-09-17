@@ -10,7 +10,7 @@ include_once "header.php";
     <!-- Theme Toggle Button -->
     <div class="theme-toggle-container">
         <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle">
-            🌙 <span id="theme-text">Modo Claro</span>
+            🌙 <span id="theme-text">Modo Escuro</span>
         </button>
     </div>
 
@@ -29,7 +29,7 @@ include_once "header.php";
                     <form action="create.php" method="post">
                         <input placeholder="Nome Completo" type="text" class="form-control" id="campoNome" name="campoNome" required>
                         <br>
-                        <input placeholder="Telefone Ex 011 3333-3333" type="tel" class="form-control" id="campoTelefone" name="campoTelefone" required>
+                        <input placeholder="Telefone Ex: (11) 99999-9999" type="tel" class="form-control" id="campoTelefone" name="campoTelefone" required>
                         <br>
                         <input placeholder="Email" type="email" class="form-control" id="campoEmail" name="campoEmail" required>
 

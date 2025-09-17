@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const htmlElement = document.documentElement;
     
     // Load theme from localStorage
-    const currentTheme = localStorage.getItem('theme') || 'dark';
+    const currentTheme = localStorage.getItem('theme') || 'light';
     setTheme(currentTheme);
     
     themeToggle.addEventListener('click', function() {
@@ -37,11 +37,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function applyPhoneMask(input) {
     let value = input.value.replace(/\D/g, '');
     
+    // Limitar a 11 dígitos (padrão brasileiro)
+    if (value.length > 11) {
+        value = value.substr(0, 11);
+    }
+    
     if (value.length <= 10) {
-        // Formato: (xx) xxxx-xxxx
+        // Formato: (xx) xxxx-xxxx (telefone fixo)
         value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
     } else {
-        // Formato: (xx) xxxxx-xxxx
+        // Formato: (xx) xxxxx-xxxx (celular)
         value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
     }
     

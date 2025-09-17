@@ -10,7 +10,7 @@ $id = $_POST['id'];
     <!-- Theme Toggle Button -->
     <div class="theme-toggle-container">
         <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle">
-            🌙 <span id="theme-text">Modo Claro</span>
+            🌙 <span id="theme-text">Modo Escuro</span>
         </button>
     </div>
 <header>
@@ -35,7 +35,7 @@ if (!$id == 0){
     <br>
     <input placeholder='Nome Completo' type='text' value='<?php echo $row['nome']; ?>' class='form-control' id='nome' name='nome' required>
     <br>
-    <input placeholder='Telefone Ex 011 3333-3333' type='tel' value='<?php echo $row['telefone'];; ?>' class='form-control' id='telefone' name='telefone' required>
+    <input placeholder='Telefone Ex: (11) 99999-9999' type='tel' value='<?php echo $row['telefone'];; ?>' class='form-control' id='telefone' name='telefone' required>
     <br>
     <input placeholder='email@dominio.com' type='email' value='<?php echo $row['email'];; ?>' class='form-control' id='email' name='email' required>
     <br>
