@@ -6,7 +6,14 @@ include_once "header.php";
 <title>Contatos</title>
 </header>
 
-<body class='bg-dark text-light'>
+<body>
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle-container">
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle">
+            🌙 <span id="theme-text">Modo Escuro</span>
+        </button>
+    </div>
+
 <header>
     <h1 class='h-25 text-center'>Contatos</h1>
     <!-- Cadastro Novo Usuário Modal-->
@@ -22,7 +29,7 @@ include_once "header.php";
                     <form action="create.php" method="post">
                         <input placeholder="Nome Completo" type="text" class="form-control" id="campoNome" name="campoNome" required>
                         <br>
-                        <input placeholder="Telefone Ex 011 3333-3333" type="tel" class="form-control" id="campoTelefone" name="campoTelefone" required>
+                        <input placeholder="Telefone Ex: (11) 99999-9999" type="tel" class="form-control" id="campoTelefone" name="campoTelefone" required>
                         <br>
                         <input placeholder="Email" type="email" class="form-control" id="campoEmail" name="campoEmail" required>
 
@@ -53,12 +60,22 @@ if (isset($_GET['search'])) {
 // numero de registros por pagina
 $no_of_records_per_page = 5;
 $offset = ($page-1) * $no_of_records_per_page;
-$total_pages_sql = "SELECT COUNT(*) FROM cadastros";
-$result = mysqli_query($link,$total_pages_sql);
-$total_rows = mysqli_fetch_array($result)[0];
+
+// Contagem total usando PDO
+$total_pages_sql = "SELECT COUNT(*) as total FROM cadastros";
+$stmt = $pdo->prepare($total_pages_sql);
+$stmt->execute();
+$total_rows = $stmt->fetch()['total'];
 $total_pages = ceil($total_rows / $no_of_records_per_page);
-$sql = "SELECT * FROM cadastros WHERE nome LIKE '%$busca%' LIMIT $offset, $no_of_records_per_page";
-$resultSql = mysqli_query($link, $sql);
+
+// Consulta com paginação usando PDO
+$sql = "SELECT * FROM cadastros WHERE nome LIKE :busca LIMIT :offset, :per_page";
+$stmt = $pdo->prepare($sql);
+$stmt->bindValue(':busca', "%$busca%", PDO::PARAM_STR);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->bindValue(':per_page', $no_of_records_per_page, PDO::PARAM_INT);
+$stmt->execute();
+$resultSql = $stmt;
 ?>
 
 <div class="container">
@@ -75,7 +92,7 @@ $resultSql = mysqli_query($link, $sql);
 
 
     <!-- Cabeçalho da Tabela -->
-    <table class="table table-dark table-hover" style="margin-top: 20px;">
+    <table class="table table-hover" style="margin-top: 20px;">
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Nome</th>
@@ -85,13 +102,13 @@ $resultSql = mysqli_query($link, $sql);
         </tr>
 
 <?php
-while ($row = mysqli_fetch_assoc($resultSql)){
+while ($row = $resultSql->fetch()){
 
     echo  
-        "<tr><td>" . $row["id"] . 
-        "</td><td>" . $row["nome"] . 
-        "</td><td>" . $row["telefone"] . 
-        "</td><td>" . $row["email"] . 
+        "<tr><td>" . htmlspecialchars($row["id"]) . 
+        "</td><td>" . htmlspecialchars($row["nome"]) . 
+        "</td><td>" . htmlspecialchars($row["telefone"]) . 
+        "</td><td>" . htmlspecialchars($row["email"]) . 
         "</td><td>" . "<form action='edit-front.php' method='post'><button type='submit' class='btn btn-danger' name='id' value='" .  $row["id"] . "'>Editar</button>" . "</a></td></tr>";
 }
 
@@ -118,7 +135,6 @@ while ($row = mysqli_fetch_assoc($resultSql)){
     </div>
     </div>
 <?php
-
-mysqli_close($link);
+// Conexão será fechada automaticamente pelo PDO no final do script
 include_once "footer.php";
 

@@ -6,7 +6,13 @@ $id = $_POST['id'];
 ?>
 <title>Editar | Contatos</title>
 </head>
-<body class="container bg-dark text-light">
+<body class="container">
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle-container">
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle">
+            🌙 <span id="theme-text">Modo Escuro</span>
+        </button>
+    </div>
 <header>
     <div class="container">
     <h1>Editar Contato</h1>
@@ -15,9 +21,12 @@ $id = $_POST['id'];
 </header>
 <?php
 if (!$id == 0){
-    $sql = "SELECT * FROM cadastros WHERE id = '$id'";
-    $sqlResult = mysqli_query($link, $sql);
-    $row = mysqli_fetch_array($sqlResult, MYSQLI_ASSOC);
+    // Consulta usando PDO com prepared statements
+    $sql = "SELECT * FROM cadastros WHERE id = :id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $row = $stmt->fetch();
   
 ?>  
 
@@ -26,7 +35,7 @@ if (!$id == 0){
     <br>
     <input placeholder='Nome Completo' type='text' value='<?php echo $row['nome']; ?>' class='form-control' id='nome' name='nome' required>
     <br>
-    <input placeholder='Telefone Ex 011 3333-3333' type='tel' value='<?php echo $row['telefone'];; ?>' class='form-control' id='telefone' name='telefone' required>
+    <input placeholder='Telefone Ex: (11) 99999-9999' type='tel' value='<?php echo $row['telefone'];; ?>' class='form-control' id='telefone' name='telefone' required>
     <br>
     <input placeholder='email@dominio.com' type='email' value='<?php echo $row['email'];; ?>' class='form-control' id='email' name='email' required>
     <br>
@@ -40,7 +49,8 @@ if (!$id == 0){
     </div>
     
 <?php
-mysqli_close($link);
+// Conexão PDO será fechada automaticamente
+include_once "footer.php";
 
 } else {
     echo "<script>
@@ -48,3 +58,4 @@ mysqli_close($link);
     history.back();
     </script>";
 }
+?>
