@@ -1,9 +1,16 @@
 # Configuration files with sensitive data
 config.php
+.env
+
+# Dependencies
+/vendor/
+node_modules/
 
 # IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS files
 .DS_Store
@@ -11,6 +18,22 @@ Thumbs.db
 
 # Log files
 *.log
+storage/logs/*
+
+# Uploads
+/uploads/*
+!/uploads/.gitkeep
+
+# Cache and temp files
+/storage/cache/*
+/storage/sessions/*
+/tmp/*
 
 # Test files
 test-*.php
+phpunit.xml
+.phpunit.result.cache
+
+# Build artifacts
+/dist/
+/build/

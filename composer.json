@@ -1,0 +1,14 @@
+{
+    "name": "cristianomzn/contatos",
+    "description": "Modern contact management system with MVC architecture",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    }
+}
