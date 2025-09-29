@@ -43,7 +43,7 @@ class Router
     
     public function dispatch(): void
     {
-        $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        $method = $_SERVER['REQUEST_METHOD'];
         $path = $this->getPath();
         
         foreach ($this->routes as $route) {
