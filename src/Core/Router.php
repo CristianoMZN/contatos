@@ -50,7 +50,7 @@ class Router
             if ($route['method'] === $method && $this->matchPath($route['path'], $path)) {
                 // Execute middlewares
                 foreach ($route['middlewares'] as $middleware) {
-                    $middlewareClass = "App\\Middleware\\{$middleware}";
+                    $middlewareClass = "App\\Middleware\\{$middleware}Middleware";
                     if (class_exists($middlewareClass)) {
                         $middlewareInstance = new $middlewareClass();
                         if (!$middlewareInstance->handle()) {
