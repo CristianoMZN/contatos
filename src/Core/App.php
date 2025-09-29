@@ -64,7 +64,14 @@ class App
         }
         
         $service = $this->container[$key];
-        return is_callable($service) ? $service() : $service;
+        
+        // If it's a callable, call it once and store the result
+        if (is_callable($service)) {
+            $this->container[$key] = $service();
+            return $this->container[$key];
+        }
+        
+        return $service;
     }
     
     public function run(): void
