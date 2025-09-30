@@ -312,7 +312,16 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 🆕 Changelog
 
-### v2.0.0 - Refatoração MVC (Atual)
+### v2.0.1 - Melhorias de UX e Infraestrutura (Issue #6)
+- ✨ **Botão de tema**: Movido de posição flutuante para navbar
+- ✨ **Sistema de flash messages**: Implementado com suporte a 4 tipos de alertas (success, error, warning, info)
+- ✨ **Migrations com Phinx**: Adicionado robmorgan/phinx para versionamento de schema
+- ✨ **ErrorHandler**: Nova classe utilitária para tratamento consistente de erros
+- ✨ **Melhor UX**: Alertas com Bootstrap e proteção XSS
+- 🔧 **Composer**: Flag `--no-interaction` documentada para uso em automações
+- 📚 **Documentação**: Guia completo de flash messages e error handling
+
+### v2.0.0 - Refatoração MVC
 - ✨ Arquitetura MVC completa
 - ✨ Sistema de autenticação seguro
 - ✨ Interface moderna responsiva
