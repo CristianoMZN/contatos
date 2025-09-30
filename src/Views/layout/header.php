@@ -42,13 +42,6 @@
     
     <!-- Custom CSS -->
     <style>
-        .theme-toggle-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1050;
-        }
-        
         .contact-card {
             transition: transform 0.2s;
             height: 100%;
@@ -112,13 +105,6 @@
 </head>
 
 <body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle-container">
-        <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle">
-            🌙 <span id="theme-text">Modo Escuro</span>
-        </button>
-    </div>
-
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
@@ -146,6 +132,11 @@
                 </ul>
                 
                 <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-outline-light btn-sm me-2" id="theme-toggle">
+                            🌙 <span id="theme-text">Modo Escuro</span>
+                        </button>
+                    </li>
                     <?php if (isset($_SESSION['user_authenticated']) && $_SESSION['user_authenticated']): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

@@ -109,7 +109,7 @@ git clone https://github.com/CristianoMZN/contatos.git
 cd contatos
 
 # Instale as dependências
-composer install
+composer install --no-interaction
 
 # Configure o banco de dados
 cp config-new.php config.php
@@ -126,8 +126,32 @@ define('DB_NAME', 'contatos');
 
 ### 4. Execute a Migração
 ```bash
+# Método 1: Script legado
 php migrate.php
+
+# Método 2: Usando Phinx (recomendado)
+vendor/bin/phinx migrate
 ```
+
+### 4.1. Gerenciamento de Migrations com Phinx
+O projeto agora suporta migrations usando Phinx. Para criar uma nova migration:
+```bash
+# Criar nova migration
+vendor/bin/phinx create NomeDaMigration
+
+# Executar migrations pendentes
+vendor/bin/phinx migrate
+
+# Reverter última migration
+vendor/bin/phinx rollback
+```
+
+Configuração do banco em `phinx.php` usando variáveis de ambiente:
+- `DB_HOST` - Host do banco (padrão: localhost)
+- `DB_NAME` - Nome do banco
+- `DB_USER` - Usuário do banco
+- `DB_PASSWORD` - Senha do banco
+- `DB_PORT` - Porta do banco (padrão: 3306)
 
 ### 5. Configuração do Servidor Web
 
