@@ -168,18 +168,58 @@
     </nav>
 
     <!-- Alert Messages -->
-    <?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <?php endif; ?>
+    <div class="container mt-3">
+        <?php
+        // Check for flash messages (new method)
+        if (isset($app) && method_exists($app, 'get')) {
+            try {
+                $session = $app->get('session');
+                if ($session && method_exists($session, 'getFlash')) {
+                    foreach (['error', 'success', 'warning', 'info'] as $type) {
+                        $message = $session->getFlash($type);
+                        if ($message) {
+                            $alertClass = $type === 'error' ? 'danger' : $type;
+                            echo '<div class="alert alert-' . htmlspecialchars($alertClass) . ' alert-dismissible fade show" role="alert">';
+                            echo htmlspecialchars($message);
+                            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>';
+                            echo '</div>';
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // Session not available, skip flash messages
+            }
+        }
+        
+        // Fallback to old session method for backward compatibility
+        if (isset($_SESSION['error'])):
+        ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
 
-    <?php if (isset($_SESSION['success'])): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['warning'])): ?>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['warning']); unset($_SESSION['warning']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['info'])): ?>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['info']); unset($_SESSION['info']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
     </div>
-    <?php endif; ?>
 
     <!-- Main Content -->

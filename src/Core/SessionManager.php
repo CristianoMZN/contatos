@@ -118,4 +118,33 @@ class SessionManager
     {
         return hash_equals($this->get('csrf_token', ''), $token);
     }
+    
+    /**
+     * Set a flash message
+     */
+    public function setFlash(string $type, string $message): void
+    {
+        $_SESSION['flash'][$type] = $message;
+    }
+    
+    /**
+     * Get flash message and remove it
+     */
+    public function getFlash(string $type): ?string
+    {
+        if (isset($_SESSION['flash'][$type])) {
+            $message = $_SESSION['flash'][$type];
+            unset($_SESSION['flash'][$type]);
+            return $message;
+        }
+        return null;
+    }
+    
+    /**
+     * Check if flash message exists
+     */
+    public function hasFlash(string $type): bool
+    {
+        return isset($_SESSION['flash'][$type]);
+    }
 }

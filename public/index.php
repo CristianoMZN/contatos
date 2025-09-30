@@ -29,7 +29,22 @@ try {
     // Log error in production
     error_log($e->getMessage());
     
-    // Show error page
+    // Get session manager if available
+    $session = null;
+    try {
+        $session = $app->get('session');
+    } catch (Exception $sessionEx) {
+        // Session not available
+    }
+    
+    // If session available, set flash message and redirect to home
+    if ($session && $session instanceof \App\Core\SessionManager) {
+        $session->setFlash('error', 'Ocorreu um erro inesperado. Por favor, tente novamente.');
+        header('Location: /');
+        exit;
+    }
+    
+    // Otherwise show basic error page
     http_response_code(500);
-    echo "Erro interno do servidor. Tente novamente mais tarde.";
+    include dirname(__DIR__) . '/src/Views/errors/500.php';
 }

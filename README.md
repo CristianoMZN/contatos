@@ -245,8 +245,47 @@ server {
 - **Views**: Templates PHP com separação clara
 - **Routes**: Sistema de roteamento flexível
 - **Middleware**: Controle de acesso e validação
+- **Error Handling**: Sistema de tratamento de erros com alertas amigáveis
 
 ## 🔧 Desenvolvimento
+
+### Sistema de Mensagens Flash:
+O sistema utiliza mensagens flash para exibir alertas ao usuário:
+```php
+// No controller
+$session = $this->app->get('session');
+
+// Mensagens de sucesso
+$session->setFlash('success', 'Operação realizada com sucesso!');
+
+// Mensagens de erro
+$session->setFlash('error', 'Ocorreu um erro na operação.');
+
+// Mensagens de aviso
+$session->setFlash('warning', 'Atenção: verifique os dados informados.');
+
+// Mensagens de informação
+$session->setFlash('info', 'Informação importante para o usuário.');
+```
+
+As mensagens são exibidas automaticamente no header usando Bootstrap alerts.
+
+### Tratamento de Erros:
+```php
+use App\Core\ErrorHandler;
+
+// Tratar exceção
+try {
+    // código que pode gerar erro
+} catch (Exception $e) {
+    ErrorHandler::handleException($e, $session);
+    // redirecionar ou exibir erro
+}
+
+// Mostrar erros de validação
+$errors = ['Campo obrigatório', 'Email inválido'];
+ErrorHandler::showValidationErrors($errors, $session);
+```
 
 ### Adicionando Novas Funcionalidades:
 1. **Controller**: Crie em `src/Controllers/`
