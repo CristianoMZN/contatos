@@ -2,7 +2,6 @@
 * text=auto
 
 # Denote generated files (collapsed in GitHub PRs)
-composer.lock linguist-generated=true
 vendor/** linguist-generated=true
 node_modules/** linguist-generated=true
 

@@ -45,3 +45,4 @@ phpunit.xml
 tmp-*.php
 debug-*.php
 temp-*.php
+composer.lock

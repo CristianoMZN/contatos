@@ -53,26 +53,29 @@ composer install --no-interaction --no-dev
 composer install
 ```
 
-### 3. **Arquivos Gerados Automaticamente em PRs** ℹ️ MODERADO
+### 3. **Arquivos Gerados Automaticamente em PRs** ℹ️ RESOLVIDO
 
-**Problema**: `composer.lock` aparece em PRs causando ruído nas reviews.
+**Problema**: `composer.lock` aparecia em PRs causando ruído nas reviews e falhas de CI.
 
 **Evidências**:
 - Review do usuário em PR #11:
   > "O composer lock é um arquivo gerado automaticamente, não é necessário aprovações no desenvolvimento."
+- CI falhando com erro: "The lock file is not up to date with the latest changes in composer.json"
 
 **Impacto**:
-- Dificulta review de código
-- Causa conflitos desnecessários
-- Aumenta tamanho dos diffs
+- Dificultava review de código
+- Causava conflitos desnecessários
+- Aumentava tamanho dos diffs
+- Quebrava validação do CI
 
-**Solução Recomendada**:
-Criar `.gitattributes`:
-```gitattributes
-# Collapse generated files in diffs
-composer.lock linguist-generated=true
-vendor/** linguist-generated=true
+**Solução Implementada**:
+✅ `composer.lock` removido do repositório e adicionado ao `.gitignore`:
+```gitignore
+# Composer lock file (not tracked for this project)
+composer.lock
 ```
+
+**Justificativa**: Para este projeto de desenvolvimento/aprendizado com poucas dependências, não rastrear o lock file simplifica o workflow e evita conflitos.
 
 ### 4. **Tratamento de Erros com HTML em Flash Messages** ⚠️ IMPORTANTE
 
@@ -243,7 +246,6 @@ echo FlashHelper::render($session);
 * text=auto
 
 # Denote generated files
-composer.lock linguist-generated=true
 vendor/** linguist-generated=true
 node_modules/** linguist-generated=true
 
@@ -381,7 +383,7 @@ O repositório está em bom estado geral, com arquitetura sólida e boas prátic
 
 **Prioridade #1**: Configurar allowlist do firewall para permitir download de dependências do Composer.
 
-**Prioridade #2**: Corrigir os 3 problemas críticos de código (500.php, double-escaping, composer.lock).
+**Prioridade #2**: Corrigir os 2 problemas críticos de código (500.php, double-escaping).
 
 **Prioridade #3**: Adicionar configurações recomendadas para melhorar experiência de desenvolvimento.
 

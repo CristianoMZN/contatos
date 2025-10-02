@@ -18,7 +18,7 @@ Os seguintes arquivos de configuração foram adicionados ao repositório:
 ### 2. `.gitattributes`
 **Propósito**: Melhorar visualização de diffs no GitHub  
 **Benefícios**:
-- Colapsa `composer.lock` em PRs (marcado como `linguist-generated`)
+- Marca arquivos gerados (vendor/**, node_modules/**)
 - Detecta automaticamente tipo de arquivo
 - Configura diffs específicos por linguagem
 
@@ -35,6 +35,7 @@ Os seguintes arquivos de configuração foram adicionados ao repositório:
 **Adicionado**:
 - Arquivos temporários do Copilot
 - Arquivos de debug (tmp-*.php, debug-*.php)
+- composer.lock (não rastreado para simplificar workflow)
 
 ### 5. `COPILOT_AUTOMATION_ANALYSIS.md`
 **Propósito**: Análise completa de problemas e soluções  
@@ -116,9 +117,9 @@ O Copilot lerá automaticamente `.github/copilot-instructions.md` e seguirá as 
 
 ### Para Revisores
 
-1. O `.gitattributes` colapsará automaticamente `composer.lock` nos diffs
-2. O workflow de CI executará validações automáticas em cada PR
-3. Use o checklist em `copilot-instructions.md` para revisar PRs
+1. O workflow de CI executará validações automáticas em cada PR
+2. Use o checklist em `copilot-instructions.md` para revisar PRs
+3. `composer.lock` não é mais rastreado, simplificando reviews
 
 ## 🔍 Problemas Resolvidos
 
@@ -128,7 +129,7 @@ Estes arquivos resolvem os seguintes problemas identificados:
 |----------|-------------------|
 | Firewall bloqueando Composer | Configuração manual no GitHub (ver acima) |
 | Código não segue padrões | `.github/copilot-instructions.md` |
-| composer.lock em diffs grandes | `.gitattributes` |
+| composer.lock causando conflitos | ✅ Removido e adicionado ao `.gitignore` |
 | Sem validação automática de código | `.github/workflows/ci.yml` |
 | Arquivos temporários commitados | `.gitignore` atualizado |
 | Double-escaping em flash messages | Documentado em `copilot-instructions.md` |
