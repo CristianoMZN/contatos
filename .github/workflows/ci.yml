@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ master, main ]
+  push:
+    branches: [ master, main ]
+
+jobs:
+  lint:
+    name: Lint & Validate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          coverage: none
+          
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+        
+      - name: Check PHP syntax errors
+        run: |
+          echo "Checking PHP syntax..."
+          find src -name "*.php" -type f -print0 | xargs -0 -n1 php -l
+          find public -name "*.php" -type f -print0 | xargs -0 -n1 php -l
+          echo "✓ No syntax errors found"
+
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Check for unsafe database queries
+        run: |
+          echo "Checking for unsafe database practices..."
+          if grep -r "mysqli_query\|mysql_query" src/ public/; then
+            echo "❌ Found unsafe database query functions (mysqli_query/mysql_query)"
+            echo "Please use PDO prepared statements instead"
+            exit 1
+          fi
+          echo "✓ No unsafe database queries found"
+      
+      - name: Check for SQL injection vulnerabilities
+        run: |
+          echo "Checking for potential SQL injection..."
+          if grep -r '\$_GET\|\$_POST\|\$_REQUEST' src/ | grep -i 'query\|select\|insert\|update\|delete' | grep -v 'htmlspecialchars'; then
+            echo "⚠️  Warning: Found user input in database queries"
+            echo "Please ensure all queries use prepared statements"
+          else
+            echo "✓ No obvious SQL injection patterns found"
+          fi
+      
+      - name: Check for XSS vulnerabilities
+        run: |
+          echo "Checking for potential XSS vulnerabilities..."
+          if grep -r 'echo \$_\(GET\|POST\|REQUEST\)' src/Views/; then
+            echo "❌ Found unescaped user input in views"
+            echo "Please use htmlspecialchars() for all user output"
+            exit 1
+          fi
+          echo "✓ No unescaped user output found in views"
+
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Check for debug code
+        run: |
+          echo "Checking for debug code..."
+          if grep -r "var_dump\|print_r\|var_export" src/ --include="*.php" | grep -v "//"; then
+            echo "⚠️  Warning: Found debug functions in code"
+            echo "Please remove var_dump, print_r, and var_export before merging"
+          else
+            echo "✓ No debug code found"
+          fi
+      
+      - name: Check for TODOs
+        run: |
+          echo "Checking for TODO comments..."
+          TODOS=$(grep -r "TODO\|FIXME\|XXX" src/ --include="*.php" || true)
+          if [ -n "$TODOS" ]; then
+            echo "📝 Found TODO items:"
+            echo "$TODOS"
+          else
+            echo "✓ No TODO items found"
+          fi
