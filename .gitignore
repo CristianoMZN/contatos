@@ -37,3 +37,11 @@ phpunit.xml
 # Build artifacts
 /dist/
 /build/
+# Copilot temporary files
+.copilot/
+*.copilot.tmp
+
+# Debug and temporary files
+tmp-*.php
+debug-*.php
+temp-*.php

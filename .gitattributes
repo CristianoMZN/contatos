@@ -1,0 +1,51 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Denote generated files (collapsed in GitHub PRs)
+composer.lock linguist-generated=true
+vendor/** linguist-generated=true
+node_modules/** linguist-generated=true
+
+# Archives
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.7z binary
+*.rar binary
+
+# Images
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+*.webp binary
+
+# Fonts
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+
+# Documents
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+# Export diffs for specific file types
+*.php diff=php
+*.css diff=css
+*.html diff=html
+*.js diff=javascript
+*.md diff=markdown
+
+# Treat certain files as documentation
+*.md linguist-documentation
+LICENSE linguist-documentation
+CHANGELOG.md linguist-documentation
