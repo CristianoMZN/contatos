@@ -42,13 +42,6 @@
     
     <!-- Custom CSS -->
     <style>
-        .theme-toggle-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1050;
-        }
-        
         .contact-card {
             transition: transform 0.2s;
             height: 100%;
@@ -112,13 +105,6 @@
 </head>
 
 <body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle-container">
-        <button type="button" class="btn btn-outline-secondary btn-sm" id="theme-toggle">
-            🌙 <span id="theme-text">Modo Escuro</span>
-        </button>
-    </div>
-
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
@@ -146,6 +132,11 @@
                 </ul>
                 
                 <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-outline-light btn-sm me-2" id="theme-toggle">
+                            🌙 <span id="theme-text">Modo Escuro</span>
+                        </button>
+                    </li>
                     <?php if (isset($_SESSION['user_authenticated']) && $_SESSION['user_authenticated']): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -177,18 +168,58 @@
     </nav>
 
     <!-- Alert Messages -->
-    <?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?= $_SESSION['error']; unset($_SESSION['error']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <?php endif; ?>
+    <div class="container mt-3">
+        <?php
+        // Check for flash messages (new method)
+        if (isset($app) && method_exists($app, 'get')) {
+            try {
+                $session = $app->get('session');
+                if ($session && method_exists($session, 'getFlash')) {
+                    foreach (['error', 'success', 'warning', 'info'] as $type) {
+                        $message = $session->getFlash($type);
+                        if ($message) {
+                            $alertClass = $type === 'error' ? 'danger' : $type;
+                            echo '<div class="alert alert-' . htmlspecialchars($alertClass) . ' alert-dismissible fade show" role="alert">';
+                            echo htmlspecialchars($message);
+                            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>';
+                            echo '</div>';
+                        }
+                    }
+                }
+            } catch (Exception $e) {
+                // Session not available, skip flash messages
+            }
+        }
+        
+        // Fallback to old session method for backward compatibility
+        if (isset($_SESSION['error'])):
+        ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
 
-    <?php if (isset($_SESSION['success'])): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= $_SESSION['success']; unset($_SESSION['success']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <?php if (isset($_SESSION['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['warning'])): ?>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['warning']); unset($_SESSION['warning']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['info'])): ?>
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['info']); unset($_SESSION['info']); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+        <?php endif; ?>
     </div>
-    <?php endif; ?>
 
     <!-- Main Content -->
