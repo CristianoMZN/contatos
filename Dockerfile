@@ -1,7 +1,7 @@
 FROM php:8.4-fpm-alpine AS base
 
 # Install system dependencies and PHP extensions
-RUN apk add --no-cache \
+RUN apk update && apk add --no-cache \
     bash \
     curl \
     git \
@@ -23,7 +23,8 @@ RUN apk add --no-cache \
         zip \
         opcache \
         gd \
-    && apk del --purge *-dev
+    && apk del --purge *-dev \
+    && rm -rf /var/cache/apk/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
