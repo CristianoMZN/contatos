@@ -1,0 +1,87 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+.github
+
+# Documentation
+*.md
+!README.md
+COPILOT_*.md
+RECOMMENDATIONS.md
+QUICK_START.md
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Configuration files (will be mounted or set via env)
+config.php
+.env
+.env.*
+
+# Logs
+*.log
+storage/logs/*
+
+# Uploads (will be mounted as volume)
+uploads/*
+
+# Cache and temp files
+storage/cache/*
+storage/sessions/*
+tmp/*
+/tmp/*
+
+# Test files and artifacts
+test-*.php
+tests/
+phpunit.xml
+.phpunit.result.cache
+coverage/
+
+# Build artifacts
+dist/
+build/
+
+# Development tools
+composer.phar
+composer.lock
+
+# Debug and temporary files
+tmp-*.php
+debug-*.php
+temp-*.php
+.copilot/
+*.copilot.tmp
+
+# SQL dumps (not needed in image)
+SQL/
+*.sql
+
+# Migration files (will run separately)
+migrations/
+phinx.php
+migrate.php
+
+# Old/legacy files
+create.php
+del.php
+edit.php
+edit-front.php
+footer.php
+header.php
+index.php
+config-new.php
