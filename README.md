@@ -10,10 +10,24 @@ Por que este README ajuda o Copilot a gerar PRs melhores
 
 Conteúdo recomendado (já incluído neste repositório)
 1. Visão Geral
-- Stack: PHP (7.4+ / 8.x), Composer, PHPUnit
-- Componentes: src/ (lógica), public/ (entry), tests/ (unit), scripts/ (dev tools)
+- Stack: PHP (8.3+/8.4), Composer, PHPUnit
+- Infraestrutura: Docker, Nginx, PHP-FPM, MariaDB
+- CI/CD: GitHub Actions (build, push, deploy)
+- Componentes: src/ (lógica), public/ (entry), tests/ (unit), .github/ (workflows)
 
 2. Como rodar localmente
+
+### Opção 1: Docker (Recomendado)
+- Requisitos: Docker 20.10+, Docker Compose 2.0+
+- Iniciar ambiente:
+  ```bash
+  cp .env.example .env
+  docker-compose up -d
+  ```
+- Acessar: http://localhost:8080
+- Ver guia completo: [DOCKER.md](DOCKER.md)
+
+### Opção 2: PHP Nativo
 - Requisitos: PHP 7.4+, Composer
 - Instalar dependências:
   - composer install

@@ -1,0 +1,56 @@
+; PHP-FPM Pool Configuration Template
+; This file uses environment variable substitution via envsubst
+
+[www]
+user = www
+group = www
+
+; Listen on Unix socket for better performance
+listen = /var/run/php-fpm.sock
+listen.owner = www
+listen.group = www
+listen.mode = 0660
+
+; Process manager settings - configured via environment variables
+pm = ${PHP_FPM_PM}
+pm.max_children = ${PHP_FPM_MAX_CHILDREN}
+pm.start_servers = ${PHP_FPM_START_SERVERS}
+pm.min_spare_servers = ${PHP_FPM_MIN_SPARE_SERVERS}
+pm.max_spare_servers = ${PHP_FPM_MAX_SPARE_SERVERS}
+pm.max_requests = ${PHP_FPM_MAX_REQUESTS}
+
+; Process naming
+pm.process_idle_timeout = 10s
+pm.max_spawn_rate = 32
+
+; Status page (accessible via /fpm-status)
+pm.status_path = /fpm-status
+
+; Ping page (accessible via /fpm-ping)
+ping.path = /fpm-ping
+ping.response = pong
+
+; Logging
+access.log = /proc/self/fd/2
+access.format = "%R - %u %t \"%m %r\" %s %{mili}d %{kilo}M %C%%"
+
+; Catch worker output
+catch_workers_output = yes
+decorate_workers_output = no
+
+; Request termination timeout (5 minutes)
+request_terminate_timeout = 300
+
+; Environment variables
+clear_env = no
+
+; Slow log
+slowlog = /var/log/php-fpm-slow.log
+request_slowlog_timeout = 10s
+
+; Security
+security.limit_extensions = .php
+
+; PHP admin values
+php_admin_value[error_log] = /var/log/php-fpm-error.log
+php_admin_flag[log_errors] = on

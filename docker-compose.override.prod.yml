@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    # Use production image from registry
+    image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG:-latest}
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+      CLEAR_CACHE: ${CLEAR_CACHE:-true}
+      # Production PHP-FPM settings (high load)
+      PHP_FPM_PM: dynamic
+      PHP_FPM_MAX_CHILDREN: 100
+      PHP_FPM_START_SERVERS: 10
+      PHP_FPM_MIN_SPARE_SERVERS: 10
+      PHP_FPM_MAX_SPARE_SERVERS: 50
+      PHP_FPM_MAX_REQUESTS: 500
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  db:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    command: >
+      --max-connections=200
+      --innodb-buffer-pool-size=1G
+      --innodb-log-file-size=256M
+      --query-cache-type=0
+      --query-cache-size=0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

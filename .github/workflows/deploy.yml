@@ -1,0 +1,268 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      image_tag:
+        description: 'Docker image tag to deploy'
+        required: false
+        default: 'latest'
+        type: string
+  workflow_run:
+    workflows: ["Build and Push Docker Image"]
+    types:
+      - completed
+    branches:
+      - main
+      - master
+
+env:
+  REGISTRY_URL: ${{ vars.REGISTRY_URL || 'ghcr.io' }}
+  REGISTRY_NAMESPACE: ${{ vars.REGISTRY_NAMESPACE || github.repository_owner }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME || 'contatos' }}
+  IMAGE_TAG: ${{ inputs.image_tag || 'latest' }}
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment || 'production' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'production' }}
+    permissions:
+      contents: read
+      actions: read
+    
+    # Only run if build succeeded or manually triggered
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy
+          cp docker-compose.yml deploy/
+          cp docker-compose.override.prod.yml deploy/
+          cp .env.example deploy/.env.example
+          
+          # Create deploy script
+          cat > deploy/deploy.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          echo "Starting deployment..."
+          
+          # Load environment variables
+          if [ -f .env ]; then
+            export $(cat .env | grep -v '^#' | xargs)
+          else
+            echo "Error: .env file not found"
+            exit 1
+          fi
+          
+          # Login to container registry
+          echo "Logging in to container registry..."
+          echo "${REGISTRY_PASSWORD}" | docker login ${REGISTRY_URL} -u ${REGISTRY_USERNAME} --password-stdin
+          
+          # Pull latest images
+          echo "Pulling latest images..."
+          docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml pull
+          
+          # Stop and remove old containers
+          echo "Stopping old containers..."
+          docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml down
+          
+          # Start new containers
+          echo "Starting new containers..."
+          docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml up -d
+          
+          # Wait for health checks
+          echo "Waiting for application to be healthy..."
+          sleep 10
+          
+          # Check container status
+          docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml ps
+          
+          # Test health endpoint
+          echo "Testing health endpoint..."
+          curl -f http://localhost:${APP_PORT:-8080}/health || echo "Warning: Health check failed"
+          
+          # Cleanup old images
+          echo "Cleaning up old images..."
+          docker image prune -af --filter "until=24h"
+          
+          echo "Deployment completed successfully!"
+          EOF
+          
+          chmod +x deploy/deploy.sh
+          
+          # Create archive
+          tar -czf deployment.tar.gz -C deploy .
+
+      - name: Upload deployment package
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-package
+          path: deployment.tar.gz
+          retention-days: 7
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        env:
+          REGISTRY_URL: ${{ env.REGISTRY_URL }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME || github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          envs: REGISTRY_URL,REGISTRY_USERNAME,REGISTRY_PASSWORD,IMAGE_TAG
+          script: |
+            set -e
+            
+            # Create deployment directory
+            DEPLOY_DIR="${HOME}/contatos-deploy"
+            mkdir -p ${DEPLOY_DIR}
+            cd ${DEPLOY_DIR}
+            
+            # Backup current .env if exists
+            if [ -f .env ]; then
+              cp .env .env.backup
+            fi
+            
+            # Download deployment package
+            echo "Downloading deployment package..."
+            
+            # Clean previous deployment files
+            rm -f deployment.tar.gz
+            find . -maxdepth 1 -type f \( -name "*.yml" -o -name "*.sh" \) -delete
+            
+            # Transfer via temporary file from GitHub Actions
+            echo "Deployment files ready"
+
+      - name: Transfer deployment files
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: "deployment.tar.gz"
+          target: "~/contatos-deploy/"
+
+      - name: Extract and deploy
+        uses: appleboy/ssh-action@v1.0.0
+        env:
+          REGISTRY_URL: ${{ env.REGISTRY_URL }}
+          REGISTRY_NAMESPACE: ${{ env.REGISTRY_NAMESPACE }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME || github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          envs: REGISTRY_URL,REGISTRY_NAMESPACE,IMAGE_NAME,IMAGE_TAG,REGISTRY_USERNAME,REGISTRY_PASSWORD
+          script: |
+            set -e
+            cd ~/contatos-deploy
+            
+            # Extract deployment package
+            echo "Extracting deployment package..."
+            tar -xzf deployment.tar.gz
+            
+            # Restore .env if backup exists, otherwise use example
+            if [ -f .env.backup ]; then
+              cp .env.backup .env
+            elif [ ! -f .env ]; then
+              cp .env.example .env
+              echo "WARNING: Using .env.example - please configure production values!"
+            fi
+            
+            # Update .env with current image tag
+            sed -i "s|IMAGE_TAG=.*|IMAGE_TAG=${IMAGE_TAG}|g" .env
+            sed -i "s|REGISTRY_URL=.*|REGISTRY_URL=${REGISTRY_URL}|g" .env
+            sed -i "s|REGISTRY_NAMESPACE=.*|REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}|g" .env
+            sed -i "s|IMAGE_NAME=.*|IMAGE_NAME=${IMAGE_NAME}|g" .env
+            
+            # Set registry credentials for deployment
+            export REGISTRY_USERNAME="${REGISTRY_USERNAME}"
+            export REGISTRY_PASSWORD="${REGISTRY_PASSWORD}"
+            
+            # Run deployment script
+            chmod +x deploy.sh
+            ./deploy.sh
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd ~/contatos-deploy
+            
+            echo "=== Container Status ==="
+            docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml ps
+            
+            echo ""
+            echo "=== Application Logs (last 20 lines) ==="
+            docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml logs --tail=20 app
+            
+            echo ""
+            echo "=== Health Check ==="
+            sleep 5
+            curl -f http://localhost:8080/health && echo "✓ Application is healthy" || echo "✗ Health check failed"
+
+      - name: Create deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** \`${{ inputs.environment || 'production' }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ env.REGISTRY_URL }}/${{ env.REGISTRY_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed to:** \`${{ secrets.DEPLOY_HOST }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** \`$(date -u '+%Y-%m-%d %H:%M:%S UTC')\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify application is accessible at your domain" >> $GITHUB_STEP_SUMMARY
+          echo "2. Check application logs: \`docker-compose logs -f app\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Monitor resource usage: \`docker stats\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Rollback on failure
+        if: failure()
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            cd ~/contatos-deploy
+            
+            echo "Deployment failed - attempting rollback..."
+            
+            # Restore previous .env
+            if [ -f .env.backup ]; then
+              cp .env.backup .env
+              
+              # Restart with previous configuration
+              docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml down
+              docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml up -d
+              
+              echo "Rollback completed"
+            else
+              echo "No backup found - manual intervention required"
+            fi

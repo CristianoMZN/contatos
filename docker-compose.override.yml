@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: contatos:dev
+    volumes:
+      # Mount source code for live editing
+      - ./:/var/www/html:cached
+      # Override vendor to use container's version
+      - /var/www/html/vendor
+    environment:
+      APP_ENV: development
+      APP_DEBUG: "true"
+      RUN_MIGRATIONS: "true"
+      CLEAR_CACHE: "false"
+      # Xdebug
+      XDEBUG_MODE: debug,coverage
+      XDEBUG_CONFIG: client_host=host.docker.internal
+    ports:
+      - "8080:8080"
+      - "9003:9003"  # Xdebug
+
+  db:
+    ports:
+      - "3307:3306"  # Different port to avoid conflicts with local MySQL
+
+  # Adminer for database management
+  adminer:
+    image: adminer:4.8.1
+    container_name: contatos-adminer
+    restart: unless-stopped
+    networks:
+      - contatos-network
+    ports:
+      - "8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: dracula
+    depends_on:
+      - db

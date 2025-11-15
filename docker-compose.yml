@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  app:
+    image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG:-latest}
+    container_name: contatos-app
+    restart: unless-stopped
+    networks:
+      - contatos-network
+    environment:
+      # Application
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost}
+      
+      # Database
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_DATABASE: ${DB_DATABASE:-contatos}
+      DB_USERNAME: ${DB_USERNAME:-contatos}
+      DB_PASSWORD: ${DB_PASSWORD}
+      
+      # PHP-FPM tuning
+      PHP_FPM_PM: ${PHP_FPM_PM:-dynamic}
+      PHP_FPM_MAX_CHILDREN: ${PHP_FPM_MAX_CHILDREN:-50}
+      PHP_FPM_START_SERVERS: ${PHP_FPM_START_SERVERS:-5}
+      PHP_FPM_MIN_SPARE_SERVERS: ${PHP_FPM_MIN_SPARE_SERVERS:-5}
+      PHP_FPM_MAX_SPARE_SERVERS: ${PHP_FPM_MAX_SPARE_SERVERS:-35}
+      PHP_FPM_MAX_REQUESTS: ${PHP_FPM_MAX_REQUESTS:-1000}
+      
+      # Features
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-false}
+      CLEAR_CACHE: ${CLEAR_CACHE:-false}
+    volumes:
+      - uploads-data:/var/www/html/uploads
+      - storage-data:/var/www/html/storage
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: mariadb:11.2
+    container_name: contatos-db
+    restart: unless-stopped
+    networks:
+      - contatos-network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-contatos}
+      MYSQL_USER: ${DB_USERNAME:-contatos}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "${DB_EXTERNAL_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+networks:
+  contatos-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+  uploads-data:
+    driver: local
+  storage-data:
+    driver: local
