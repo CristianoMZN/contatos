@@ -4,14 +4,14 @@
 title: Contatos - Sistema de Gerenciamento
 description: Sistema moderno de gerenciamento de contatos com arquitetura MVC em PHP
 author: CristianoMZN
-email: cristianomzn@users.noreply.github.com
+email: past.kun@gmail.com
 
 # Repository
 repository: CristianoMZN/contatos
 github_username: CristianoMZN
 
 # Build settings
-theme: null
+remote_theme: jekyll-theme-minimal
 plugins: []
 
 # Exclude from processing
