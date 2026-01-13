@@ -1,3 +1,13 @@
+---
+# Fill in the fields below to create a basic custom agent for your repository.
+# The Copilot CLI can be used for local testing: https://gh.io/customagents/cli
+# To make this agent available, merge this file into the default repository branch.
+# For format details, see: https://gh.io/customagents/config
+
+name: Symfony Firebase DDD Architect
+description: Agente especializado para refatoração do projeto **contatos** de PHP puro/MySQL para uma arquitetura moderna baseada em **Clean Architecture**, **Tactical DDD**, **Symfony 7.x** e **Firebase**.
+---
+
 # 🤖 Agente Copilot:  Symfony Firebase DDD Architect
 
 ## 📋 Visão Geral
