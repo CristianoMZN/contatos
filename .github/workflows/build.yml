@@ -62,7 +62,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix={{branch}}-
+            type=sha
           labels: |
             org.opencontainers.image.title=Contatos
             org.opencontainers.image.description=Contact Management System
