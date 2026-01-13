@@ -11,12 +11,23 @@ repository: CristianoMZN/contatos
 github_username: CristianoMZN
 
 # Build settings
-remote_theme: jekyll-theme-minimal
-plugins: []
+remote_theme: jekyll/minima@v3.0.0
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+# Minima theme settings (suporte a dark mode automático)
+minima:
+  skin: auto  # auto, dark, classic, solarized, solarized-dark
+  social_links:
+    - platform: github
+      user_url: "https://github.com/CristianoMZN/contatos"
+      title: GitHub
 
 # Exclude from processing
 exclude:
   - README.md
+  - GITHUB_PAGES_SETUP.md
   - Gemfile
   - Gemfile.lock
   - node_modules
@@ -33,6 +44,8 @@ markdown: kramdown
 kramdown:
   input: GFM
   syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    default_lang: php
 
 # Permalinks
 permalink: pretty
@@ -42,3 +55,10 @@ timezone: America/Sao_Paulo
 
 # Language
 lang: pt-BR
+
+# Header pages (navegação)
+header_pages:
+  - installation.md
+  - architecture.md
+  - api.md
+  - contributing.md
