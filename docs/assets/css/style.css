@@ -18,6 +18,8 @@
     --border-color: #dee2e6;
     --code-bg: #f8f9fa;
     --nav-bg: #0d6efd;
+    --hover-bg: #f8f9fa;
+    --footer-bg: #212529;
 }
 
 /* Dark mode support using prefers-color-scheme */
@@ -29,6 +31,8 @@
         --border-color: #495057;
         --code-bg: #212529;
         --nav-bg: #0a58ca;
+        --hover-bg: #3a3a3a;
+        --footer-bg: #0d0d0d;
     }
     
     body {
@@ -82,7 +86,7 @@
     }
     
     .list-group-item:hover {
-        background-color: #3a3a3a;
+        background-color: var(--hover-bg);
     }
     
     .alert {
@@ -92,7 +96,7 @@
     }
     
     footer.bg-dark {
-        background-color: #0d0d0d !important;
+        background-color: var(--footer-bg) !important;
     }
 }
 
