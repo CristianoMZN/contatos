@@ -1,0 +1,7 @@
+# Robots.txt for Contatos Documentation
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://cristianomzn.github.io/contatos/sitemap.xml
