@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Guia completo de instalação do sistema Contatos">
+    <title>Instalação - Contatos</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-person-vcard"></i> Contatos
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="installation.html">Instalação</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="architecture.html">Arquitetura</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="api.html">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contributing.html">Contribuir</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/CristianoMZN/contatos" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="bi bi-download text-primary"></i> Instalação
+                    </h1>
+                    <p class="lead text-muted">
+                        Guia completo para configurar e executar o sistema em seu ambiente
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="sidebar-nav">
+                        <nav class="nav flex-column">
+                            <a class="nav-link" href="#requisitos">Requisitos</a>
+                            <a class="nav-link" href="#docker">Docker (Recomendado)</a>
+                            <a class="nav-link" href="#nativo">Instalação Nativa</a>
+                            <a class="nav-link" href="#configuracao">Configuração</a>
+                            <a class="nav-link" href="#migracao">Migração do Banco</a>
+                            <a class="nav-link" href="#verificacao">Verificação</a>
+                            <a class="nav-link" href="#problemas">Problemas Comuns</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <!-- Requisitos -->
+                    <section id="requisitos" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-list-check text-primary"></i> Requisitos do Sistema</h2>
+                        
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Opção 1: Docker (Recomendado)</h5>
+                                <ul>
+                                    <li>Docker 20.10+</li>
+                                    <li>Docker Compose 2.0+</li>
+                                    <li>4GB RAM (mínimo), 8GB recomendado</li>
+                                    <li>10GB espaço em disco</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Opção 2: Instalação Nativa</h5>
+                                <ul>
+                                    <li>PHP 7.4 ou superior (PHP 8.4 recomendado)</li>
+                                    <li>Extensões PHP: pdo_mysql, mbstring, intl, zip, gd</li>
+                                    <li>Composer 2.0+</li>
+                                    <li>MariaDB 10.5+ ou MySQL 8.0+</li>
+                                    <li>Servidor web (Nginx ou Apache)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Docker Installation -->
+                    <section id="docker" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-docker text-primary"></i> Instalação com Docker</h2>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Recomendado:</strong> Esta é a forma mais rápida e fácil de começar!
+                        </div>
+
+                        <h5 class="mt-4">Passo 1: Clone o Repositório</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code>git clone https://github.com/CristianoMZN/contatos.git
+cd contatos</code></pre>
+
+                        <h5 class="mt-4">Passo 2: Configure as Variáveis de Ambiente</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code># Copie o arquivo de exemplo
+cp .env.example .env
+
+# Edite o arquivo .env e defina suas senhas
+nano .env</code></pre>
+
+                        <div class="card my-3">
+                            <div class="card-body">
+                                <h6 class="card-title">Variáveis Obrigatórias</h6>
+                                <pre class="bg-light p-3 rounded mb-0"><code>DB_PASSWORD=sua_senha_segura
+DB_ROOT_PASSWORD=sua_senha_root_segura</code></pre>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4">Passo 3: Inicie os Containers</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code># Modo desenvolvimento (com Xdebug e Adminer)
+docker-compose up -d
+
+# Ou modo produção
+docker-compose -f docker-compose.yml -f docker-compose.override.prod.yml up -d</code></pre>
+
+                        <h5 class="mt-4">Passo 4: Acesse o Sistema</h5>
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <strong>Aplicação:</strong> <a href="http://localhost:8080" target="_blank">http://localhost:8080</a>
+                            </div>
+                            <div class="list-group-item">
+                                <strong>Adminer (dev):</strong> <a href="http://localhost:8081" target="_blank">http://localhost:8081</a>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4">Comandos Úteis do Docker</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code># Ver logs
+docker-compose logs -f
+
+# Parar containers
+docker-compose stop
+
+# Reiniciar containers
+docker-compose restart
+
+# Remover containers
+docker-compose down
+
+# Acessar shell do container
+docker-compose exec app sh</code></pre>
+                    </section>
+
+                    <!-- Native Installation -->
+                    <section id="nativo" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-code-slash text-primary"></i> Instalação Nativa (PHP)</h2>
+
+                        <h5 class="mt-4">Passo 1: Clone e Configure</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code>git clone https://github.com/CristianoMZN/contatos.git
+cd contatos
+cp .env.example .env</code></pre>
+
+                        <h5 class="mt-4">Passo 2: Instale as Dependências</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code>composer install --no-dev</code></pre>
+
+                        <h5 class="mt-4">Passo 3: Configure o Banco de Dados</h5>
+                        <p>Edite o arquivo <code>.env</code> com suas configurações:</p>
+                        <pre class="bg-light p-3 rounded"><code>DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=contatos
+DB_USER=root
+DB_PASSWORD=sua_senha
+DB_CHARSET=utf8mb4</code></pre>
+
+                        <h5 class="mt-4">Passo 4: Execute as Migrações</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code>php migrate.php</code></pre>
+
+                        <h5 class="mt-4">Passo 5: Configure o Servidor Web</h5>
+                        
+                        <div class="accordion" id="serverAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#nginx">
+                                        Nginx
+                                    </button>
+                                </h2>
+                                <div id="nginx" class="accordion-collapse collapse show" data-bs-parent="#serverAccordion">
+                                    <div class="accordion-body">
+                                        <pre class="bg-dark text-white p-3 rounded"><code>server {
+    listen 80;
+    server_name contatos.local;
+    root /path/to/contatos/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#apache">
+                                        Apache
+                                    </button>
+                                </h2>
+                                <div id="apache" class="accordion-collapse collapse" data-bs-parent="#serverAccordion">
+                                    <div class="accordion-body">
+                                        <pre class="bg-dark text-white p-3 rounded"><code>&lt;VirtualHost *:80&gt;
+    ServerName contatos.local
+    DocumentRoot /path/to/contatos/public
+
+    &lt;Directory /path/to/contatos/public&gt;
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+
+    ErrorLog ${APACHE_LOG_DIR}/contatos_error.log
+    CustomLog ${APACHE_LOG_DIR}/contatos_access.log combined
+&lt;/VirtualHost&gt;</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#builtin">
+                                        Servidor Embutido PHP (Desenvolvimento)
+                                    </button>
+                                </h2>
+                                <div id="builtin" class="accordion-collapse collapse" data-bs-parent="#serverAccordion">
+                                    <div class="accordion-body">
+                                        <pre class="bg-dark text-white p-3 rounded"><code>php -S localhost:8000 -t public</code></pre>
+                                        <p class="mt-2">Acesse: <a href="http://localhost:8000" target="_blank">http://localhost:8000</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Configuration -->
+                    <section id="configuracao" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-gear text-primary"></i> Configuração Avançada</h2>
+
+                        <h5>Variáveis de Ambiente Disponíveis</h5>
+                        <div class="table-responsive">
+                            <table class="table table-custom">
+                                <thead>
+                                    <tr>
+                                        <th>Variável</th>
+                                        <th>Descrição</th>
+                                        <th>Padrão</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>DB_HOST</code></td>
+                                        <td>Host do banco de dados</td>
+                                        <td>db</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DB_PORT</code></td>
+                                        <td>Porta do banco de dados</td>
+                                        <td>3306</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DB_NAME</code></td>
+                                        <td>Nome do banco de dados</td>
+                                        <td>contatos</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DB_USER</code></td>
+                                        <td>Usuário do banco</td>
+                                        <td>contatos_user</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>DB_PASSWORD</code></td>
+                                        <td>Senha do usuário</td>
+                                        <td>(obrigatório)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>APP_ENV</code></td>
+                                        <td>Ambiente (dev/prod)</td>
+                                        <td>production</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Database Migration -->
+                    <section id="migracao" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-database text-primary"></i> Migração do Banco de Dados</h2>
+
+                        <p>O sistema usa migrations para gerenciar o esquema do banco de dados.</p>
+
+                        <h5 class="mt-4">Executar Migrations</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code># Via Docker
+docker-compose exec app php migrate.php
+
+# Instalação nativa
+php migrate.php</code></pre>
+
+                        <h5 class="mt-4">Verificar Status das Migrations</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code># Via Docker
+docker-compose exec app vendor/bin/phinx status
+
+# Instalação nativa
+vendor/bin/phinx status</code></pre>
+                    </section>
+
+                    <!-- Verification -->
+                    <section id="verificacao" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-check-circle text-primary"></i> Verificação da Instalação</h2>
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Checklist de Verificação</h5>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check1">
+                                    <label class="form-check-label" for="check1">
+                                        ✓ Página inicial carrega corretamente
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check2">
+                                    <label class="form-check-label" for="check2">
+                                        ✓ É possível registrar um novo usuário
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check3">
+                                    <label class="form-check-label" for="check3">
+                                        ✓ Login funciona corretamente
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check4">
+                                    <label class="form-check-label" for="check4">
+                                        ✓ É possível criar um contato
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="check5">
+                                    <label class="form-check-label" for="check5">
+                                        ✓ Upload de imagens funciona
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Common Issues -->
+                    <section id="problemas" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-tools text-primary"></i> Problemas Comuns</h2>
+
+                        <div class="accordion" id="issuesAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#issue1">
+                                        Erro de conexão com banco de dados
+                                    </button>
+                                </h2>
+                                <div id="issue1" class="accordion-collapse collapse show" data-bs-parent="#issuesAccordion">
+                                    <div class="accordion-body">
+                                        <p><strong>Sintoma:</strong> "Connection refused" ou "Access denied"</p>
+                                        <p><strong>Solução:</strong></p>
+                                        <ul>
+                                            <li>Verifique se as credenciais no <code>.env</code> estão corretas</li>
+                                            <li>Certifique-se que o MariaDB está rodando: <code>docker-compose ps</code></li>
+                                            <li>Verifique os logs: <code>docker-compose logs db</code></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#issue2">
+                                        Erro de permissão em arquivos
+                                    </button>
+                                </h2>
+                                <div id="issue2" class="accordion-collapse collapse" data-bs-parent="#issuesAccordion">
+                                    <div class="accordion-body">
+                                        <p><strong>Sintoma:</strong> "Permission denied" ao fazer upload ou criar arquivos</p>
+                                        <p><strong>Solução:</strong></p>
+                                        <pre class="bg-dark text-white p-3 rounded"><code># Dar permissão para uploads
+chmod -R 755 uploads/
+chown -R www-data:www-data uploads/
+
+# Docker
+docker-compose exec app chown -R www:www /var/www/html/uploads</code></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#issue3">
+                                        Erro 500 ao acessar o sistema
+                                    </button>
+                                </h2>
+                                <div id="issue3" class="accordion-collapse collapse" data-bs-parent="#issuesAccordion">
+                                    <div class="accordion-body">
+                                        <p><strong>Solução:</strong></p>
+                                        <ul>
+                                            <li>Verifique os logs de erro do PHP</li>
+                                            <li>Certifique-se que todas as dependências foram instaladas: <code>composer install</code></li>
+                                            <li>Verifique se as migrations foram executadas</li>
+                                            <li>Ative display_errors no php.ini para ver detalhes</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Next Steps -->
+                    <div class="alert alert-success">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-check-circle"></i> Instalação Completa!
+                        </h5>
+                        <p>Agora você pode:</p>
+                        <ul class="mb-0">
+                            <li><a href="architecture.html">Conhecer a arquitetura do sistema</a></li>
+                            <li><a href="api.html">Explorar a documentação da API</a></li>
+                            <li><a href="contributing.html">Contribuir para o projeto</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">
+                        <i class="bi bi-person-vcard"></i> 
+                        <strong>Contatos</strong> - Sistema de Gerenciamento
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="https://github.com/CristianoMZN/contatos" class="btn btn-outline-light btn-sm me-2">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="https://github.com/CristianoMZN/contatos/issues" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-bug"></i> Issues
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

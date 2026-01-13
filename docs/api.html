@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Documentação da API do sistema Contatos">
+    <title>API - Contatos</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-person-vcard"></i> Contatos
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="installation.html">Instalação</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="architecture.html">Arquitetura</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="api.html">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contributing.html">Contribuir</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/CristianoMZN/contatos" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="bi bi-code-slash text-primary"></i> Documentação da API
+                    </h1>
+                    <p class="lead text-muted">
+                        Referência completa de rotas e endpoints do sistema
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="sidebar-nav">
+                        <nav class="nav flex-column">
+                            <a class="nav-link" href="#auth">Autenticação</a>
+                            <a class="nav-link" href="#contacts">Contatos</a>
+                            <a class="nav-link" href="#public">Contatos Públicos</a>
+                            <a class="nav-link" href="#images">Imagens</a>
+                            <a class="nav-link" href="#errors">Tratamento de Erros</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <!-- Introduction -->
+                    <div class="mb-5">
+                        <h2>Introdução</h2>
+                        <p>A API do sistema Contatos utiliza rotas HTTP padrão e formulários web. Todas as rotas protegidas requerem autenticação via sessão.</p>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Nota:</strong> Esta é uma aplicação web tradicional com renderização server-side. Não é uma API REST pura.
+                        </div>
+                    </div>
+
+                    <!-- Authentication -->
+                    <section id="auth" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-shield-lock text-primary"></i> Autenticação</h2>
+
+                        <!-- Register -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-success">POST</span> /register
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Registra um novo usuário</p>
+                                
+                                <h6>Parâmetros (form-data):</h6>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Campo</th>
+                                            <th>Tipo</th>
+                                            <th>Obrigatório</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>name</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Nome completo</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>email</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Email válido</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>password</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Mínimo 8 caracteres</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>password_confirmation</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Deve ser igual à senha</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>_token</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>CSRF token</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h6>Resposta Sucesso:</h6>
+                                <pre class="bg-light p-3 rounded"><code>Redirect: /dashboard
+Flash: "Conta criada com sucesso!"</code></pre>
+
+                                <h6>Resposta Erro:</h6>
+                                <pre class="bg-light p-3 rounded"><code>Redirect: /register
+Flash: [Array de erros de validação]</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- Login -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-success">POST</span> /login
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Autentica um usuário</p>
+                                
+                                <h6>Parâmetros (form-data):</h6>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Campo</th>
+                                            <th>Tipo</th>
+                                            <th>Obrigatório</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>email</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Email do usuário</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>password</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Senha</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>_token</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>CSRF token</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <h6>Resposta Sucesso:</h6>
+                                <pre class="bg-light p-3 rounded"><code>Redirect: /dashboard
+Session: user_authenticated = true, user_id = {id}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- Logout -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-success">POST</span> /logout
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Encerra a sessão do usuário</p>
+                                <p><strong>Autenticação:</strong> Requerida</p>
+                                
+                                <h6>Resposta:</h6>
+                                <pre class="bg-light p-3 rounded"><code>Redirect: /
+Session: Destruída</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Contacts -->
+                    <section id="contacts" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-person-vcard text-primary"></i> Contatos Privados</h2>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-shield-lock"></i>
+                            <strong>Autenticação Requerida:</strong> Todos os endpoints desta seção requerem autenticação.
+                        </div>
+
+                        <!-- List Contacts -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-info">GET</span> /contacts
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Lista todos os contatos do usuário autenticado</p>
+                                
+                                <h6>Query Parameters (opcional):</h6>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Parâmetro</th>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>page</code></td>
+                                            <td>integer</td>
+                                            <td>Número da página (padrão: 1)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>search</code></td>
+                                            <td>string</td>
+                                            <td>Buscar por nome ou email</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>category</code></td>
+                                            <td>integer</td>
+                                            <td>Filtrar por categoria</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Create Contact -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-warning">POST</span> /contacts
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Cria um novo contato</p>
+                                
+                                <h6>Parâmetros (form-data):</h6>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Campo</th>
+                                            <th>Tipo</th>
+                                            <th>Obrigatório</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>name</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>Nome do contato</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>email</code></td>
+                                            <td>string</td>
+                                            <td>Não</td>
+                                            <td>Email do contato</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>phone</code></td>
+                                            <td>string</td>
+                                            <td>Não</td>
+                                            <td>Telefone</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>description</code></td>
+                                            <td>text</td>
+                                            <td>Não</td>
+                                            <td>Descrição/observações</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>is_company</code></td>
+                                            <td>boolean</td>
+                                            <td>Não</td>
+                                            <td>Se é empresa pública</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>category_id</code></td>
+                                            <td>integer</td>
+                                            <td>Não</td>
+                                            <td>ID da categoria</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>_token</code></td>
+                                            <td>string</td>
+                                            <td>Sim</td>
+                                            <td>CSRF token</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Update Contact -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-primary">PUT</span> /contacts/{id}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Atualiza um contato existente</p>
+                                <p><strong>Nota:</strong> Apenas o dono do contato pode atualizá-lo</p>
+                                
+                                <h6>Parâmetros de URL:</h6>
+                                <ul>
+                                    <li><code>{id}</code> - ID do contato</li>
+                                </ul>
+
+                                <h6>Body:</h6>
+                                <p>Mesmos campos da criação (todos opcionais)</p>
+                            </div>
+                        </div>
+
+                        <!-- Delete Contact -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-danger">DELETE</span> /contacts/{id}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Remove um contato</p>
+                                <p><strong>Nota:</strong> Apenas o dono do contato pode removê-lo</p>
+                                
+                                <h6>Resposta Sucesso:</h6>
+                                <pre class="bg-light p-3 rounded"><code>Redirect: /contacts
+Flash: "Contato removido com sucesso!"</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Public Contacts -->
+                    <section id="public" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-globe text-primary"></i> Contatos Públicos (Empresas)</h2>
+
+                        <!-- List Public Contacts -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-light text-dark">GET</span> /contatos
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Lista todas as empresas públicas (sem autenticação)</p>
+                                
+                                <h6>Query Parameters (opcional):</h6>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Parâmetro</th>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>page</code></td>
+                                            <td>integer</td>
+                                            <td>Número da página</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>category</code></td>
+                                            <td>integer</td>
+                                            <td>Filtrar por categoria</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>search</code></td>
+                                            <td>string</td>
+                                            <td>Buscar por nome</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- View Public Contact -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-light text-dark">GET</span> /contato/{slug}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Visualiza detalhes de uma empresa pública</p>
+                                
+                                <h6>Parâmetros de URL:</h6>
+                                <ul>
+                                    <li><code>{slug}</code> - Slug único da empresa</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Images -->
+                    <section id="images" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-images text-primary"></i> Gerenciamento de Imagens</h2>
+
+                        <div class="alert alert-warning">
+                            <i class="bi bi-shield-lock"></i>
+                            <strong>Autenticação Requerida</strong>
+                        </div>
+
+                        <!-- Upload Image -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-success">POST</span> /contacts/{id}/images
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Faz upload de imagem para um contato</p>
+                                
+                                <h6>Parâmetros (multipart/form-data):</h6>
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Campo</th>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>image</code></td>
+                                            <td>file</td>
+                                            <td>Arquivo de imagem (JPG, PNG, GIF)</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>is_main</code></td>
+                                            <td>boolean</td>
+                                            <td>Definir como imagem principal</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>_token</code></td>
+                                            <td>string</td>
+                                            <td>CSRF token</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="alert alert-info mt-3">
+                                    <strong>Limites:</strong>
+                                    <ul class="mb-0">
+                                        <li>Tamanho máximo: 5MB</li>
+                                        <li>Formatos aceitos: JPEG, PNG, GIF</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Image -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">
+                                    <span class="badge bg-danger">DELETE</span> /contacts/{id}/images/{imageId}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Descrição:</strong> Remove uma imagem do contato</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Error Handling -->
+                    <section id="errors" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-exclamation-triangle text-primary"></i> Tratamento de Erros</h2>
+
+                        <h5>Códigos de Status HTTP</h5>
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Descrição</th>
+                                    <th>Quando Ocorre</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="badge bg-success">200</span></td>
+                                    <td>OK</td>
+                                    <td>Requisição bem-sucedida</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-info">302</span></td>
+                                    <td>Redirect</td>
+                                    <td>Redirecionamento após ação</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-warning">400</span></td>
+                                    <td>Bad Request</td>
+                                    <td>Dados inválidos</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-warning">401</span></td>
+                                    <td>Unauthorized</td>
+                                    <td>Autenticação necessária</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-warning">403</span></td>
+                                    <td>Forbidden</td>
+                                    <td>Sem permissão</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-danger">404</span></td>
+                                    <td>Not Found</td>
+                                    <td>Recurso não encontrado</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="badge bg-danger">500</span></td>
+                                    <td>Internal Error</td>
+                                    <td>Erro do servidor</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h5 class="mt-4">Flash Messages</h5>
+                        <p>Mensagens são exibidas após redirecionamentos via sessão:</p>
+                        <pre class="bg-light p-3 rounded"><code>// Tipos disponíveis
+'success' - Operação bem-sucedida (verde)
+'error'   - Erro ou validação falhou (vermelho)
+'warning' - Aviso (amarelo)
+'info'    - Informação (azul)</code></pre>
+                    </section>
+
+                    <!-- Examples -->
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-code"></i> Exemplo de Uso
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Criar um contato via cURL:</h6>
+                            <pre class="bg-dark text-white p-3 rounded"><code>curl -X POST http://localhost:8080/contacts \
+  -H "Cookie: PHPSESSID=seu_session_id" \
+  -F "name=João Silva" \
+  -F "email=joao@example.com" \
+  -F "phone=(11) 98765-4321" \
+  -F "_token=csrf_token_value"</code></pre>
+
+                            <h6 class="mt-4">Upload de imagem:</h6>
+                            <pre class="bg-dark text-white p-3 rounded"><code>curl -X POST http://localhost:8080/contacts/123/images \
+  -H "Cookie: PHPSESSID=seu_session_id" \
+  -F "image=@/path/to/image.jpg" \
+  -F "is_main=1" \
+  -F "_token=csrf_token_value"</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">
+                        <i class="bi bi-person-vcard"></i> 
+                        <strong>Contatos</strong> - Sistema de Gerenciamento
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="https://github.com/CristianoMZN/contatos" class="btn btn-outline-light btn-sm me-2">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="https://github.com/CristianoMZN/contatos/issues" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-bug"></i> Issues
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
