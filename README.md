@@ -62,3 +62,52 @@ Conteúdo recomendado (já incluído neste repositório)
 
 7. Como escrever prompts para Copilot
 - Veja COPILOT_PROMPT.md para template de prompt e instruções práticas
+
+## 📚 Documentação
+
+Este projeto está em processo de refatoração para uma arquitetura moderna seguindo Clean Architecture + DDD Tático + Symfony 7.x + Firebase.
+
+### Guias de Arquitetura
+
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Visão completa da arquitetura
+  - Diagrama de camadas (Domain, Application, Infrastructure, Presentation)
+  - Responsabilidades de cada camada
+  - Estrutura de diretórios detalhada
+  - Stack tecnológica completa (Symfony 7.x, Firebase, ASAAS)
+  - Decisões arquiteturais (ADRs)
+  - Estratégia de migração
+
+- **[FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md)** - Guia completo de integração Firebase
+  - Configuração do Firebase Admin SDK
+  - Estrutura de coleções do Firestore
+  - Firebase Authentication (Email/Password, Google Sign-In)
+  - Firebase Storage para upload de imagens
+  - GCP Secret Manager para gerenciamento de secrets
+  - Security Rules (Firestore e Storage)
+  - Exemplos práticos de queries e código
+
+- **[DDD_GUIDE.md](docs/DDD_GUIDE.md)** - Domain-Driven Design Tático
+  - Entities vs Value Objects
+  - Aggregates e boundaries
+  - Repository Pattern
+  - Domain Services
+  - Domain Events
+  - Specifications
+  - Exemplos completos com User, Contact, Category
+
+- **[LAYERS_FLOW.md](docs/LAYERS_FLOW.md)** - Fluxos entre camadas
+  - Fluxo de criação de contato (passo a passo)
+  - Fluxo de autenticação Firebase
+  - Fluxo de busca com filtros
+  - Fluxo de busca geolocalizada
+  - Fluxo de upload de foto
+  - Fluxo de eventos de domínio
+  - Fluxo de pagamento (ASAAS)
+  - Diagramas de sequência detalhados
+
+### Outros Documentos
+
+- **[DOCKER.md](DOCKER.md)** - Guia Docker e containerização
+- **[QUICK_START.md](QUICK_START.md)** - Início rápido
+- **[RECOMMENDATIONS.md](RECOMMENDATIONS.md)** - Recomendações gerais
+- **[docs/GITHUB_PAGES_SETUP.md](docs/GITHUB_PAGES_SETUP.md)** - Configuração do GitHub Pages
