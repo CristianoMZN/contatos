@@ -81,7 +81,8 @@ Sempre que você fizer push de alterações na pasta `/docs` do branch principal
 ### Página 404
 
 1. Certifique-se que `index.html` existe em `/docs`
-2. Verifique se o arquivo `.nojekyll` está presente (para evitar processamento Jekyll)
+2. O arquivo `.nojekyll` foi **removido** para permitir processamento Jekyll
+3. Jekyll agora processa os arquivos com o tema Minima e suporte a dark mode
 
 ### Estilos não carregam
 
@@ -121,6 +122,21 @@ Sistema moderno de gerenciamento de contatos...
 
 Documentação completa disponível em: [https://cristianomzn.github.io/contatos/](https://cristianomzn.github.io/contatos/)
 ```
+
+## 🎨 Tema e Dark Mode
+
+O site utiliza:
+- **Tema Jekyll Minima v3.0.0** com skin `auto`
+- **Dark mode automático** baseado nas preferências do sistema operacional
+- **CSS customizado** com Bootstrap 5.3 para design moderno
+- **Front matter YAML** em todos os arquivos HTML para processamento Jekyll
+
+### Configuração Jekyll
+
+O arquivo `_config.yml` contém:
+- Tema: `jekyll/minima@v3.0.0`
+- Plugins: `jekyll-feed`, `jekyll-seo-tag`
+- Skin do Minima: `auto` (ativa dark mode automaticamente)
 
 ---
 
