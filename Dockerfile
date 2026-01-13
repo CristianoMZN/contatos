@@ -1,5 +1,11 @@
 FROM php:8.4-fpm-alpine AS base
 
+# PECL versions validated with PHP 8.4 and Firebase SDK
+ARG GRPC_PECL_VERSION=1.62.0
+ARG PROTOBUF_PECL_VERSION=3.25.3
+ENV GRPC_PECL_VERSION=${GRPC_PECL_VERSION} \
+    PROTOBUF_PECL_VERSION=${PROTOBUF_PECL_VERSION}
+
 # Install system dependencies and PHP extensions
 RUN apk update && apk add --no-cache \
     bash \
@@ -15,16 +21,26 @@ RUN apk update && apk add --no-cache \
     gettext \
     supervisor \
     nginx \
+    && apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        protobuf-dev \
+    && pecl install grpc-${GRPC_PECL_VERSION} protobuf-${PROTOBUF_PECL_VERSION} \
+    && docker-php-ext-enable grpc protobuf \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
         mbstring \
         intl \
         zip \
         opcache \
         gd \
-    && apk del --purge *-dev \
-    && rm -rf /var/cache/apk/*
+    && apk del --purge .build-deps \
+        libzip-dev \
+        icu-dev \
+        oniguruma-dev \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
+    && rm -rf /tmp/pear /var/cache/apk/*
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
