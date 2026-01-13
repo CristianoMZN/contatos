@@ -10,6 +10,94 @@
     --purple-color: #6f42c1;
     --dark-color: #212529;
     --light-color: #f8f9fa;
+    
+    /* Dark mode variables */
+    --bg-color: #ffffff;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --code-bg: #f8f9fa;
+    --nav-bg: #0d6efd;
+    --hover-bg: #f8f9fa;
+    --footer-bg: #212529;
+}
+
+/* Dark mode support using prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a1a1a;
+        --text-color: #e9ecef;
+        --card-bg: #2d2d2d;
+        --border-color: #495057;
+        --code-bg: #212529;
+        --nav-bg: #0a58ca;
+        --hover-bg: #3a3a3a;
+        --footer-bg: #0d0d0d;
+    }
+    
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+    
+    .card {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+    }
+    
+    pre {
+        background-color: var(--code-bg);
+    }
+    
+    code {
+        background-color: var(--code-bg);
+        color: #ff79c6;
+    }
+    
+    /* Adjust Bootstrap colors for dark mode */
+    .bg-light {
+        background-color: var(--card-bg) !important;
+    }
+    
+    .text-muted {
+        color: #adb5bd !important;
+    }
+    
+    .text-dark {
+        color: var(--text-color) !important;
+    }
+    
+    .bg-white {
+        background-color: var(--card-bg) !important;
+    }
+    
+    .navbar-dark.bg-primary {
+        background-color: var(--nav-bg) !important;
+    }
+    
+    .table-custom {
+        background: var(--card-bg);
+    }
+    
+    .list-group-item {
+        background-color: var(--card-bg);
+        border-color: var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .list-group-item:hover {
+        background-color: var(--hover-bg);
+    }
+    
+    .alert {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+    
+    footer.bg-dark {
+        background-color: var(--footer-bg) !important;
+    }
 }
 
 body {
