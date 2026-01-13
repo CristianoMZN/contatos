@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Arquitetura MVC do sistema Contatos">
+    <title>Arquitetura - Contatos</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-person-vcard"></i> Contatos
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="installation.html">Instalação</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="architecture.html">Arquitetura</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="api.html">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contributing.html">Contribuir</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/CristianoMZN/contatos" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="bi bi-diagram-3 text-primary"></i> Arquitetura
+                    </h1>
+                    <p class="lead text-muted">
+                        Estrutura MVC moderna com separação clara de responsabilidades
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-lg-3 mb-4">
+                    <div class="sidebar-nav">
+                        <nav class="nav flex-column">
+                            <a class="nav-link" href="#overview">Visão Geral</a>
+                            <a class="nav-link" href="#structure">Estrutura de Pastas</a>
+                            <a class="nav-link" href="#mvc">Padrão MVC</a>
+                            <a class="nav-link" href="#routing">Roteamento</a>
+                            <a class="nav-link" href="#database">Banco de Dados</a>
+                            <a class="nav-link" href="#security">Segurança</a>
+                            <a class="nav-link" href="#sessions">Sessões</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <!-- Overview -->
+                    <section id="overview" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-eye text-primary"></i> Visão Geral</h2>
+                        
+                        <p>O sistema Contatos utiliza uma arquitetura <strong>MVC (Model-View-Controller)</strong> moderna e bem estruturada, seguindo as melhores práticas de desenvolvimento PHP.</p>
+
+                        <div class="row g-3 mt-4">
+                            <div class="col-md-4">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-server text-primary fs-1"></i>
+                                        <h5 class="mt-3">Model</h5>
+                                        <p class="text-muted small">Gerencia dados e lógica de negócio</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100 border-success">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-eye text-success fs-1"></i>
+                                        <h5 class="mt-3">View</h5>
+                                        <p class="text-muted small">Apresenta dados ao usuário</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100 border-info">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-controller text-info fs-1"></i>
+                                        <h5 class="mt-3">Controller</h5>
+                                        <p class="text-muted small">Coordena Model e View</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Structure -->
+                    <section id="structure" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-folder text-primary"></i> Estrutura de Pastas</h2>
+
+                        <pre class="bg-dark text-white p-3 rounded"><code>contatos/
+├── public/                 # Entry point público
+│   ├── index.php          # Front controller
+│   ├── css/               # Estilos
+│   └── js/                # JavaScript
+│
+├── src/                   # Código da aplicação
+│   ├── Controllers/       # Controladores MVC
+│   ├── Models/            # Modelos de dados
+│   ├── Views/             # Templates de visualização
+│   ├── Core/              # Classes fundamentais
+│   │   ├── App.php        # Container IoC
+│   │   ├── Router.php     # Sistema de rotas
+│   │   ├── Database.php   # Conexão PDO
+│   │   ├── Controller.php # Controller base
+│   │   ├── Model.php      # Model base
+│   │   ├── SessionManager.php
+│   │   └── ErrorHandler.php
+│   ├── Middleware/        # Middlewares
+│   │   └── AuthMiddleware.php
+│   └── Services/          # Serviços auxiliares
+│       └── RateLimitService.php
+│
+├── routes/                # Definição de rotas
+│   └── web.php
+│
+├── config/                # Configurações
+│   └── database.php
+│
+├── migrations/            # Migrations do banco
+├── docker/                # Configuração Docker
+├── .github/               # CI/CD workflows
+└── docs/                  # Documentação (GitHub Pages)
+</code></pre>
+
+                        <div class="alert alert-info mt-3">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>PSR-4 Autoloading:</strong> O namespace <code>App\</code> mapeia para a pasta <code>src/</code>
+                        </div>
+                    </section>
+
+                    <!-- MVC Pattern -->
+                    <section id="mvc" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-diagram-3 text-primary"></i> Padrão MVC</h2>
+
+                        <h5 class="mt-4">Controllers</h5>
+                        <p>Gerenciam requisições HTTP e coordenam Model e View.</p>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php
+namespace App\Controllers;
+
+use App\Core\Controller;
+use App\Models\Contact;
+
+class ContactController extends Controller
+{
+    public function index()
+    {
+        $contactModel = new Contact();
+        $contacts = $contactModel->findAll();
+        
+        $this->render('contacts/index', [
+            'contacts' => $contacts
+        ]);
+    }
+    
+    public function store()
+    {
+        // Validar CSRF
+        if (!$this->session->validateCsrfToken($_POST['_token'])) {
+            throw new \Exception('Invalid CSRF token');
+        }
+        
+        // Criar contato
+        $contactModel = new Contact();
+        $contact = $contactModel->create($_POST);
+        
+        $this->session->setFlash('success', 'Contato criado!');
+        $this->redirect('/contacts/' . $contact['id']);
+    }
+}</code></pre>
+
+                        <h5 class="mt-5">Models</h5>
+                        <p>Gerenciam dados e lógica de negócio com PDO.</p>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php
+namespace App\Models;
+
+use App\Core\Model;
+
+class Contact extends Model
+{
+    protected string $table = 'contacts';
+    
+    public function findByUserId(int $userId): array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM {$this->table} WHERE user_id = :user_id"
+        );
+        $stmt->bindParam(':user_id', $userId, \PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    public function create(array $data): array
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO {$this->table} 
+            (user_id, name, email, phone) 
+            VALUES (:user_id, :name, :email, :phone)"
+        );
+        
+        $stmt->execute([
+            ':user_id' => $data['user_id'],
+            ':name' => $data['name'],
+            ':email' => $data['email'],
+            ':phone' => $data['phone']
+        ]);
+        
+        return $this->findById($this->pdo->lastInsertId());
+    }
+}</code></pre>
+
+                        <h5 class="mt-5">Views</h5>
+                        <p>Templates PHP com escape de output para segurança.</p>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php include dirname(__DIR__) . '/layout/header.php'; ?&gt;
+
+&lt;div class="container py-4"&gt;
+    &lt;h1&gt;Meus Contatos&lt;/h1&gt;
+    
+    &lt;?php foreach ($contacts as $contact): ?&gt;
+        &lt;div class="card mb-3"&gt;
+            &lt;div class="card-body"&gt;
+                &lt;h5&gt;&lt;?= htmlspecialchars($contact['name']) ?&gt;&lt;/h5&gt;
+                &lt;p&gt;&lt;?= htmlspecialchars($contact['email']) ?&gt;&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;?php endforeach; ?&gt;
+&lt;/div&gt;
+
+&lt;?php include dirname(__DIR__) . '/layout/footer.php'; ?&gt;</code></pre>
+                    </section>
+
+                    <!-- Routing -->
+                    <section id="routing" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-signpost text-primary"></i> Sistema de Roteamento</h2>
+
+                        <p>O Router suporta rotas dinâmicas e middlewares.</p>
+
+                        <h5 class="mt-4">Definindo Rotas</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php
+// routes/web.php
+
+use App\Core\Router;
+
+$router = Router::getInstance();
+
+// Rotas públicas
+$router->get('/', 'HomeController@index');
+$router->get('/contatos', 'PublicContactController@index');
+
+// Rotas de autenticação
+$router->get('/login', 'AuthController@showLoginForm');
+$router->post('/login', 'AuthController@login');
+$router->post('/logout', 'AuthController@logout');
+
+// Rotas protegidas (com middleware)
+$router->get('/dashboard', 'DashboardController@index', ['auth']);
+$router->get('/contacts', 'ContactController@index', ['auth']);
+$router->post('/contacts', 'ContactController@store', ['auth']);
+$router->get('/contacts/{id}', 'ContactController@show', ['auth']);
+$router->put('/contacts/{id}', 'ContactController@update', ['auth']);
+$router->delete('/contacts/{id}', 'ContactController@destroy', ['auth']);</code></pre>
+
+                        <h5 class="mt-4">Parâmetros Dinâmicos</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">// Rota com parâmetro
+$router->get('/contacts/{id}', 'ContactController@show');
+
+// No controller
+public function show($id)
+{
+    $contact = $this->contactModel->findById($id);
+    // ...
+}</code></pre>
+                    </section>
+
+                    <!-- Database -->
+                    <section id="database" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-database text-primary"></i> Banco de Dados</h2>
+
+                        <p>Utiliza PDO com prepared statements para máxima segurança.</p>
+
+                        <h5 class="mt-4">Conexão</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php
+namespace App\Core;
+
+class Database
+{
+    private static ?\PDO $instance = null;
+    
+    public static function getInstance(): \PDO
+    {
+        if (self::$instance === null) {
+            $dsn = sprintf(
+                "mysql:host=%s;port=%s;dbname=%s;charset=%s",
+                $_ENV['DB_HOST'],
+                $_ENV['DB_PORT'],
+                $_ENV['DB_NAME'],
+                $_ENV['DB_CHARSET']
+            );
+            
+            self::$instance = new \PDO(
+                $dsn,
+                $_ENV['DB_USER'],
+                $_ENV['DB_PASSWORD'],
+                [
+                    \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                    \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                    \PDO::ATTR_EMULATE_PREPARES => false,
+                ]
+            );
+        }
+        
+        return self::$instance;
+    }
+}</code></pre>
+
+                        <h5 class="mt-4">Migrations</h5>
+                        <p>Gerenciadas com Phinx para versionamento do schema.</p>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php
+use Phinx\Migration\AbstractMigration;
+
+class CreateContactsTable extends AbstractMigration
+{
+    public function change()
+    {
+        $table = $this->table('contacts');
+        $table->addColumn('user_id', 'integer')
+              ->addColumn('name', 'string', ['limit' => 255])
+              ->addColumn('email', 'string', ['limit' => 255, 'null' => true])
+              ->addColumn('phone', 'string', ['limit' => 20, 'null' => true])
+              ->addColumn('created_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+              ->addColumn('updated_at', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
+              ->addForeignKey('user_id', 'users', 'id', ['delete' => 'CASCADE'])
+              ->addIndex(['user_id'])
+              ->create();
+    }
+}</code></pre>
+                    </section>
+
+                    <!-- Security -->
+                    <section id="security" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-shield-lock text-primary"></i> Segurança</h2>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="bi bi-check-circle text-success"></i> Proteções Implementadas
+                                        </h5>
+                                        <ul class="mb-0">
+                                            <li>CSRF Protection</li>
+                                            <li>Prepared Statements (SQL Injection)</li>
+                                            <li>Output Escaping (XSS)</li>
+                                            <li>Password Hashing (Argon2ID)</li>
+                                            <li>Secure Session Management</li>
+                                            <li>Rate Limiting</li>
+                                            <li>Input Validation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="bi bi-exclamation-triangle text-warning"></i> Boas Práticas
+                                        </h5>
+                                        <ul class="mb-0">
+                                            <li>Nunca confiar em input do usuário</li>
+                                            <li>Sempre usar prepared statements</li>
+                                            <li>Escapar output com htmlspecialchars()</li>
+                                            <li>Validar CSRF em formulários</li>
+                                            <li>Usar HTTPS em produção</li>
+                                            <li>Manter dependências atualizadas</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5 class="mt-4">CSRF Protection</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">// Gerar token
+&lt;input type="hidden" name="_token" value="&lt;?= $_SESSION['csrf_token'] ?&gt;"&gt;
+
+// Validar token
+if (!$this->session->validateCsrfToken($_POST['_token'])) {
+    throw new \Exception('Invalid CSRF token');
+}</code></pre>
+
+                        <h5 class="mt-4">Password Hashing</h5>
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">// Hash
+$hash = password_hash($password, PASSWORD_ARGON2ID);
+
+// Verificar
+if (password_verify($password, $hash)) {
+    // Login bem-sucedido
+}</code></pre>
+                    </section>
+
+                    <!-- Sessions -->
+                    <section id="sessions" class="mb-5">
+                        <h2 class="mb-4"><i class="bi bi-key text-primary"></i> Gerenciamento de Sessões</h2>
+
+                        <p>SessionManager centraliza toda lógica de sessão.</p>
+
+                        <pre class="bg-dark text-white p-3 rounded"><code class="language-php">&lt;?php
+namespace App\Core;
+
+class SessionManager
+{
+    public function start(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $this->regenerateCsrfToken();
+    }
+    
+    public function set(string $key, mixed $value): void
+    {
+        $_SESSION[$key] = $value;
+    }
+    
+    public function get(string $key, mixed $default = null): mixed
+    {
+        return $_SESSION[$key] ?? $default;
+    }
+    
+    public function setFlash(string $key, mixed $value): void
+    {
+        $_SESSION['_flash'][$key] = $value;
+    }
+    
+    public function getFlash(string $key, mixed $default = null): mixed
+    {
+        $value = $_SESSION['_flash'][$key] ?? $default;
+        unset($_SESSION['_flash'][$key]);
+        return $value;
+    }
+    
+    public function destroy(): void
+    {
+        session_destroy();
+    }
+}</code></pre>
+                    </section>
+
+                    <!-- Next Steps -->
+                    <div class="alert alert-primary">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-lightbulb"></i> Próximos Passos
+                        </h5>
+                        <ul class="mb-0">
+                            <li><a href="api.html">Explore a documentação da API</a></li>
+                            <li><a href="contributing.html">Contribua para o projeto</a></li>
+                            <li><a href="https://github.com/CristianoMZN/contatos">Veja o código no GitHub</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">
+                        <i class="bi bi-person-vcard"></i> 
+                        <strong>Contatos</strong> - Sistema de Gerenciamento
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="https://github.com/CristianoMZN/contatos" class="btn btn-outline-light btn-sm me-2">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="https://github.com/CristianoMZN/contatos/issues" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-bug"></i> Issues
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>

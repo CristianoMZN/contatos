@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema moderno de gerenciamento de contatos com arquitetura MVC em PHP">
+    <meta name="keywords" content="PHP, MVC, Contatos, CRM, Sistema de Gerenciamento">
+    <meta name="author" content="CristianoMZN">
+    <title>Contatos - Sistema de Gerenciamento</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="index.html">
+                <i class="bi bi-person-vcard"></i> Contatos
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="index.html">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="installation.html">Instalação</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="architecture.html">Arquitetura</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="api.html">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contributing.html">Contribuir</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/CristianoMZN/contatos" target="_blank">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section bg-gradient-primary text-white py-5">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h1 class="display-3 fw-bold mb-4">
+                        📱 Sistema de Contatos
+                    </h1>
+                    <p class="lead mb-4">
+                        Sistema moderno de gerenciamento de contatos com arquitetura MVC, 
+                        autenticação segura e interface responsiva.
+                    </p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a href="installation.html" class="btn btn-light btn-lg">
+                            <i class="bi bi-download"></i> Começar Agora
+                        </a>
+                        <a href="https://github.com/CristianoMZN/contatos" class="btn btn-outline-light btn-lg">
+                            <i class="bi bi-github"></i> Ver no GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-0">
+                            <img src="assets/img/hero-screenshot.png" alt="Screenshot do Sistema" class="img-fluid rounded" 
+                                 onerror="this.src='https://via.placeholder.com/600x400/0d6efd/ffffff?text=Sistema+de+Contatos'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">✨ Funcionalidades Principais</h2>
+                <p class="lead text-muted">Um sistema completo e moderno para gerenciamento de contatos</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-shield-lock text-primary fs-2"></i>
+                            </div>
+                            <h5 class="card-title">Autenticação Segura</h5>
+                            <p class="card-text text-muted">
+                                Sistema robusto com CSRF protection, password hashing (Argon2ID) 
+                                e gerenciamento seguro de sessões.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-diagram-3 text-success fs-2"></i>
+                            </div>
+                            <h5 class="card-title">Arquitetura MVC</h5>
+                            <p class="card-text text-muted">
+                                Código limpo e organizado com padrão MVC, PSR-4 autoloading 
+                                e separação clara de responsabilidades.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-phone text-info fs-2"></i>
+                            </div>
+                            <h5 class="card-title">Interface Responsiva</h5>
+                            <p class="card-text text-muted">
+                                Design moderno com Bootstrap 5.3, totalmente responsivo 
+                                e otimizado para todos os dispositivos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-people text-warning fs-2"></i>
+                            </div>
+                            <h5 class="card-title">Contatos Públicos e Privados</h5>
+                            <p class="card-text text-muted">
+                                Gerencie contatos pessoais privados e cadastre empresas 
+                                na agenda pública para todos os usuários.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-docker text-danger fs-2"></i>
+                            </div>
+                            <h5 class="card-title">Docker & CI/CD</h5>
+                            <p class="card-text text-muted">
+                                Ambiente completo com Docker, Nginx, PHP-FPM, MariaDB 
+                                e workflows de CI/CD automatizados.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm hover-lift">
+                        <div class="card-body text-center p-4">
+                            <div class="feature-icon bg-purple bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                <i class="bi bi-images text-purple fs-2"></i>
+                            </div>
+                            <h5 class="card-title">Galeria de Imagens</h5>
+                            <p class="card-text text-muted">
+                                Adicione múltiplas imagens para cada contato com 
+                                gerenciamento de uploads e galeria integrada.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">🛠️ Stack Tecnológica</h2>
+                <p class="lead text-muted">Tecnologias modernas e confiáveis</p>
+            </div>
+            
+            <div class="row g-4 justify-content-center">
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <div class="tech-badge p-3">
+                        <i class="bi bi-filetype-php fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 fw-semibold">PHP 7.4+</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <div class="tech-badge p-3">
+                        <i class="bi bi-bootstrap fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 fw-semibold">Bootstrap 5</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <div class="tech-badge p-3">
+                        <i class="bi bi-database fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 fw-semibold">MariaDB</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <div class="tech-badge p-3">
+                        <i class="bi bi-docker fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 fw-semibold">Docker</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <div class="tech-badge p-3">
+                        <i class="bi bi-git fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 fw-semibold">Git</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2 text-center">
+                    <div class="tech-badge p-3">
+                        <i class="bi bi-github fs-1 text-primary"></i>
+                        <p class="mt-2 mb-0 fw-semibold">GitHub Actions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold">🚀 Quick Start</h2>
+                <p class="lead text-muted">Comece a usar em minutos</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <h5 class="card-title mb-3">
+                                <i class="bi bi-terminal text-primary"></i> Instalação com Docker
+                            </h5>
+                            <pre class="bg-dark text-white p-3 rounded"><code># Clone o repositório
+git clone https://github.com/CristianoMZN/contatos.git
+cd contatos
+
+# Configure o ambiente
+cp .env.example .env
+
+# Inicie o ambiente Docker
+docker-compose up -d
+
+# Acesse o sistema
+http://localhost:8080</code></pre>
+                            
+                            <div class="mt-3">
+                                <a href="installation.html" class="btn btn-primary">
+                                    <i class="bi bi-book"></i> Guia Completo de Instalação
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-code-slash fs-1 mb-2"></i>
+                        <h3 class="display-6 fw-bold mb-0">7.4+</h3>
+                        <p class="mb-0">PHP Version</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-shield-check fs-1 mb-2"></i>
+                        <h3 class="display-6 fw-bold mb-0">100%</h3>
+                        <p class="mb-0">Seguro</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-phone fs-1 mb-2"></i>
+                        <h3 class="display-6 fw-bold mb-0">Mobile</h3>
+                        <p class="mb-0">Responsivo</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <i class="bi bi-lightning-charge fs-1 mb-2"></i>
+                        <h3 class="display-6 fw-bold mb-0">Rápido</h3>
+                        <p class="mb-0">Performance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto text-center">
+                    <h2 class="display-5 fw-bold mb-4">Pronto para começar?</h2>
+                    <p class="lead text-muted mb-4">
+                        Clone o repositório e comece a desenvolver seu sistema de contatos hoje mesmo!
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="installation.html" class="btn btn-primary btn-lg">
+                            <i class="bi bi-download"></i> Guia de Instalação
+                        </a>
+                        <a href="architecture.html" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-diagram-3"></i> Ver Arquitetura
+                        </a>
+                        <a href="https://github.com/CristianoMZN/contatos" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-github"></i> Ver Código
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0">
+                        <i class="bi bi-person-vcard"></i> 
+                        <strong>Contatos</strong> - Sistema de Gerenciamento
+                    </p>
+                    <p class="mb-0 small text-muted">
+                        Desenvolvido com <i class="bi bi-heart-fill text-danger"></i> em PHP
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="https://github.com/CristianoMZN/contatos" class="btn btn-outline-light btn-sm me-2">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="https://github.com/CristianoMZN/contatos/issues" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-bug"></i> Issues
+                    </a>
+                </div>
+            </div>
+            <hr class="my-3 border-secondary">
+            <div class="text-center small text-muted">
+                <p class="mb-0">&copy; 2025 CristianoMZN. Licença MIT.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
