@@ -26,7 +26,7 @@ class FirestoreConnection
 
         $projectId = getenv('GCP_PROJECT_ID');
         if (!$projectId) {
-            throw new \Exception('GCP_PROJECT_ID environment variable is not set');
+            throw new \Exception('Failed to initialize Firestore: GCP_PROJECT_ID environment variable is required but not set');
         }
 
         $config = [
@@ -40,6 +40,15 @@ class FirestoreConnection
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new \Exception('Invalid FIREBASE_CREDENTIALS JSON: ' . json_last_error_msg());
             }
+            
+            // Validate required fields in credentials
+            $requiredFields = ['type', 'project_id', 'private_key', 'client_email'];
+            foreach ($requiredFields as $field) {
+                if (!isset($keyFileData[$field])) {
+                    throw new \Exception("Invalid FIREBASE_CREDENTIALS: missing required field '{$field}'");
+                }
+            }
+            
             $config['keyFile'] = $keyFileData;
         }
 

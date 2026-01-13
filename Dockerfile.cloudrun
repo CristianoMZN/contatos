@@ -47,7 +47,8 @@ RUN mkdir -p storage/logs storage/cache storage/sessions uploads \
     && chown -R www-data:www-data storage uploads \
     && chmod -R 775 storage uploads
 
-# Expose port (Cloud Run will set PORT env variable)
+# Expose port (Cloud Run will set PORT env variable dynamically at runtime)
+# While 8080 is exposed as default, the actual port is configured via PORT environment variable
 EXPOSE 8080
 
 # Start Apache in foreground
