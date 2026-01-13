@@ -75,9 +75,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add Bootstrap tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+    const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(tooltipTriggerEl => {
+        new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
     // Sidebar navigation active state
@@ -162,8 +162,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Console welcome message
-    console.log('%c📱 Contatos - Sistema de Gerenciamento', 'font-size: 20px; font-weight: bold; color: #0d6efd;');
-    console.log('%cDocumentação: https://cristianomzn.github.io/contatos/', 'color: #6c757d;');
-    console.log('%cGitHub: https://github.com/CristianoMZN/contatos', 'color: #6c757d;');
+    // Console welcome message (development only)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        console.log('%c📱 Contatos - Sistema de Gerenciamento', 'font-size: 20px; font-weight: bold; color: #0d6efd;');
+        console.log('%cDocumentação: https://cristianomzn.github.io/contatos/', 'color: #6c757d;');
+        console.log('%cGitHub: https://github.com/CristianoMZN/contatos', 'color: #6c757d;');
+    }
 });
