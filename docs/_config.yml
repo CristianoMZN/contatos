@@ -55,10 +55,3 @@ timezone: America/Sao_Paulo
 
 # Language
 lang: pt-BR
-
-# Header pages (navegação)
-header_pages:
-  - installation.md
-  - architecture.md
-  - api.md
-  - contributing.md
