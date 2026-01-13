@@ -54,7 +54,7 @@
         color: #ff79c6;
     }
     
-    /* Ajustar cores do Bootstrap para dark mode */
+    /* Adjust Bootstrap colors for dark mode */
     .bg-light {
         background-color: var(--card-bg) !important;
     }
