@@ -9,7 +9,8 @@
         }
     },
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "google/cloud-firestore": "^1.41"
     },
     "require-dev": {
         "robmorgan/phinx": "^0.16"

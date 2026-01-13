@@ -1,0 +1,54 @@
+# Dockerfile for Google Cloud Run
+# Base image with PHP 8.1 and Apache
+FROM php:8.1-apache AS base
+
+# Install system dependencies for gRPC and protobuf
+RUN apt-get update && apt-get install -y \
+    libz-dev \
+    libssl-dev \
+    libnghttp2-dev \
+    git \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PECL extensions (grpc and protobuf) required for Firestore
+RUN pecl install grpc protobuf \
+    && docker-php-ext-enable grpc protobuf
+
+# Install other necessary PHP extensions
+RUN docker-php-ext-install pdo_mysql
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configure Apache DocumentRoot to /var/www/html/public
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Enable Apache mod_rewrite
+RUN a2enmod rewrite
+
+# Configure Apache to listen on PORT environment variable (Cloud Run requirement)
+RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
+RUN echo 'PassEnv PORT' >> /etc/apache2/apache2.conf
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application files
+COPY . .
+
+# Install PHP dependencies
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+
+# Create necessary directories with proper permissions
+RUN mkdir -p storage/logs storage/cache storage/sessions uploads \
+    && chown -R www-data:www-data storage uploads \
+    && chmod -R 775 storage uploads
+
+# Expose port (Cloud Run will set PORT env variable)
+EXPOSE 8080
+
+# Start Apache in foreground
+CMD ["apache2-foreground"]
