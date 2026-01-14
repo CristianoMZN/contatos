@@ -51,7 +51,7 @@ final class PublicContactListComponent
     public function getContacts(): array
     {
         $filter = new ContactListFilter(
-            categoryId: $this->categoryId ?: null,
+            categoryId: $this->categoryId !== null && $this->categoryId !== '' ? $this->categoryId : null,
             search: $this->search !== '' ? $this->search : null,
             latitude: $this->latitude,
             longitude: $this->longitude,

@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
             url.searchParams.delete('category');
         }
 
-        const radiusValue = radiusFilter?.value ? Number.parseFloat(radiusFilter.value) : null;
-        if (radiusValue && Number.isFinite(radiusValue) && radiusValue > 0) {
+        const radiusValue = parseFloat(radiusFilter?.value ?? '');
+        if (!Number.isNaN(radiusValue) && radiusValue > 0) {
             url.searchParams.set('radius', radiusValue.toString());
         } else {
             url.searchParams.delete('radius');
@@ -128,30 +128,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const attachMask = () => {
-        const inputs = document.querySelectorAll('[data-mask="phone"]');
-        const formatPhone = (value) => {
-            const digits = value.replace(/\D/g, '').slice(0, 11);
-            if (digits.length <= 10) {
-                return digits.replace(/(\d{0,2})(\d{0,4})(\d{0,4})/, (_match, a, b, c) => {
-                    let result = '';
-                    if (a) result += `(${a}`;
-                    if (a && a.length === 2) result += ') ';
-                    if (b) result += b;
-                    if (c) result += `-${c}`;
-                    return result.trim();
-                });
+        const inputs = document.querySelectorAll('[data-mask="smart-phone"]');
+        const formatPhone = (digits) => {
+            const safeDigits = digits.slice(0, 11);
+            if (safeDigits.length <= 10) {
+                const area = safeDigits.slice(0, 2);
+                const middle = safeDigits.slice(2, 6);
+                const last = safeDigits.slice(6, 10);
+
+                let formatted = '';
+                if (area) formatted += `(${area}`;
+                if (area.length === 2) formatted += ') ';
+                if (middle) formatted += middle;
+                if (last) formatted += `-${last}`;
+
+                return formatted.trim();
             }
 
-            return digits.replace(/(\d{2})(\d{5})(\d{0,4})/, (_match, a, b, c) => {
-                let result = `(${a}) ${b}`;
-                if (c) result += `-${c}`;
-                return result;
-            });
+            const area = safeDigits.slice(0, 2);
+            const middle = safeDigits.slice(2, 7);
+            const last = safeDigits.slice(7, 11);
+
+            return `(${area}) ${middle}${last ? `-${last}` : ''}`;
         };
 
         inputs.forEach((input) => {
             input.addEventListener('input', () => {
-                input.value = formatPhone(input.value);
+                const raw = input.value;
+                const digitsOnly = raw.replace(/\D/g, '');
+
+                if (digitsOnly.length < 3 || /[a-zA-Z]/.test(raw)) {
+                    return;
+                }
+
+                input.value = formatPhone(digitsOnly);
             });
         });
     };
