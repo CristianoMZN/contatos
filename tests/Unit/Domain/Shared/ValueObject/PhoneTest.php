@@ -43,7 +43,7 @@ class PhoneTest extends TestCase
 
     public function test_formats_brazilian_landline(): void
     {
-        $phone = Phone::fromString('1198765432');
+        $phone = Phone::fromString('1187654321'); // 10 digits: 11 + 87654321
 
         $this->assertEquals('+55 (11) 8765-4321', $phone->formatted());
     }
