@@ -15,6 +15,7 @@ use App\Domain\Shared\ValueObject\Email;
 use App\Domain\Shared\ValueObject\GeoLocation;
 use App\Domain\Shared\ValueObject\Phone;
 use App\Domain\Shared\ValueObject\Slug;
+use App\Domain\Shared\Exception\UnauthorizedActionException;
 use App\Domain\User\ValueObject\UserId;
 use App\Infrastructure\Storage\FirebaseStorageService;
 
@@ -39,10 +40,10 @@ final class UpdateContactUseCase
         }
 
         if (!$contact->userId()->equals(UserId::fromString($input->userId))) {
-            throw ContactNotFoundException::withId($contactId);
+            throw UnauthorizedActionException::forAction('update');
         }
 
-        if ($input->name || $input->email || $input->phone) {
+        if ($input->name !== null || $input->email !== null || $input->phone !== null) {
             $contact->updateBasicInfo(
                 $input->name ?? $contact->name(),
                 $input->email ? Email::fromString($input->email) : $contact->email(),

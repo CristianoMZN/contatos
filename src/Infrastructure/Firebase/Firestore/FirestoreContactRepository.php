@@ -12,6 +12,7 @@ use App\Domain\User\ValueObject\UserId;
 use Google\Cloud\Core\GeoPoint;
 use Google\Cloud\Core\Timestamp;
 use Google\Cloud\Firestore\FirestoreClient;
+use Psr\Log\LoggerInterface;
 
 /**
  * Firestore implementation for Contact repository
@@ -19,9 +20,15 @@ use Google\Cloud\Firestore\FirestoreClient;
 final class FirestoreContactRepository implements ContactRepositoryInterface
 {
     private const COLLECTION = 'contacts';
+    /**
+     * Multiplier used to over-fetch batches when applying client-side geofence filters.
+     * This mitigates Firestore's lack of native geo queries without requiring extra indexes.
+     */
+    private const NEARBY_QUERY_MULTIPLIER = 3;
 
     public function __construct(
-        private readonly FirestoreClient $firestore
+        private readonly FirestoreClient $firestore,
+        private readonly ?LoggerInterface $logger = null
     ) {
     }
 
@@ -105,29 +112,19 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
         ?GeoLocation $center = null,
         ?float $radiusKm = null
     ): array {
-        $query = $this->firestore
+        $baseQuery = $this->firestore
             ->collection(self::COLLECTION)
             ->where('isPublic', '=', true);
 
         if ($categoryId) {
-            $query = $query->where('categoryId', '=', $categoryId);
+            $baseQuery = $baseQuery->where('categoryId', '=', $categoryId);
         }
 
         if ($search) {
-            $query = $query->where('searchKeywords', 'array-contains', $this->normalizeSearch($search));
+            $baseQuery = $baseQuery->where('searchKeywords', 'array-contains', $this->normalizeSearch($search));
         }
 
-        if ($center && $radiusKm !== null && $radiusKm > 0) {
-            [$latRange, $lonRange] = $this->calculateBoundingBox($center, $radiusKm);
-
-            $query = $query
-                ->where('location.latitude', '>=', $latRange[0])
-                ->where('location.latitude', '<=', $latRange[1])
-                ->where('location.longitude', '>=', $lonRange[0])
-                ->where('location.longitude', '<=', $lonRange[1]);
-        }
-
-        $query = $query->orderBy('createdAt', 'DESC')->limit($limit);
+        $baseQuery = $baseQuery->orderBy('createdAt', 'DESC');
 
         if ($cursor) {
             $cursorDoc = $this->firestore
@@ -136,22 +133,50 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
                 ->snapshot();
 
             if ($cursorDoc->exists()) {
-                $query = $query->startAfter($cursorDoc);
+                $baseQuery = $baseQuery->startAfter($cursorDoc);
             }
         }
 
         $contacts = [];
-        foreach ($query->documents() as $document) {
-            $contact = $this->mapToEntity($document->data(), $document->id());
+        $lastSnapshot = null;
+        $needsRadiusFilter = $center && $radiusKm !== null && $radiusKm > 0;
 
-            if ($center && $radiusKm !== null && $radiusKm > 0 && $contact->location()) {
-                if (!$contact->location()->isWithinRadius($center, $radiusKm)) {
-                    continue;
+        do {
+            // Firestore lacks native radius queries; over-fetch small batches and filter client-side.
+            $batchLimit = $needsRadiusFilter ? $limit * self::NEARBY_QUERY_MULTIPLIER : $limit;
+            $query = $baseQuery->limit($batchLimit);
+
+            if ($lastSnapshot) {
+                $query = $query->startAfter($lastSnapshot);
+            }
+
+            $documents = $query->documents();
+            $batchCount = 0;
+
+            foreach ($documents as $document) {
+                $batchCount++;
+                $lastSnapshot = $document;
+
+                $contact = $this->mapToEntity($document->data(), $document->id());
+                $location = $contact->location();
+
+                if ($needsRadiusFilter && $location) {
+                    if (!$location->isWithinRadius($center, $radiusKm)) {
+                        continue;
+                    }
+                }
+
+                $contacts[] = $contact;
+
+                if (count($contacts) >= $limit) {
+                    break 2;
                 }
             }
 
-            $contacts[] = $contact;
-        }
+            if ($batchCount === 0) {
+                break;
+            }
+        } while ($needsRadiusFilter && count($contacts) < $limit);
 
         return $contacts;
     }
@@ -179,25 +204,44 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
         int $limit = 50
     ): array {
         $center = GeoLocation::fromCoordinates($latitude, $longitude);
-        [$latRange, $lonRange] = $this->calculateBoundingBox($center, $radiusKm);
 
-        $query = $this->firestore
+        $baseQuery = $this->firestore
             ->collection(self::COLLECTION)
             ->where('isPublic', '=', true)
-            ->where('location.latitude', '>=', $latRange[0])
-            ->where('location.latitude', '<=', $latRange[1])
-            ->where('location.longitude', '>=', $lonRange[0])
-            ->where('location.longitude', '<=', $lonRange[1])
-            ->limit($limit);
+            ->orderBy('createdAt', 'DESC');
 
         $contacts = [];
-        foreach ($query->documents() as $document) {
-            $contact = $this->mapToEntity($document->data(), $document->id());
+        $lastSnapshot = null;
 
-            if ($contact->location() && $contact->location()->isWithinRadius($center, $radiusKm)) {
-                $contacts[] = $contact;
+        do {
+            // Firestore lacks geo-radius queries; over-fetch limited batches and filter in memory.
+            $query = $baseQuery->limit($limit * self::NEARBY_QUERY_MULTIPLIER);
+
+            if ($lastSnapshot) {
+                $query = $query->startAfter($lastSnapshot);
             }
-        }
+
+            $documents = $query->documents();
+            $batchCount = 0;
+
+            foreach ($documents as $document) {
+                $batchCount++;
+                $lastSnapshot = $document;
+                $contact = $this->mapToEntity($document->data(), $document->id());
+
+                if ($contact->location() && $contact->location()->isWithinRadius($center, $radiusKm)) {
+                    $contacts[] = $contact;
+                }
+
+                if (count($contacts) >= $limit) {
+                    break 2;
+                }
+            }
+
+            if ($batchCount === 0) {
+                break;
+            }
+        } while (count($contacts) < $limit);
 
         return $contacts;
     }
@@ -212,7 +256,11 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
 
     public function exists(ContactId $id): bool
     {
-        return $this->findById($id) !== null;
+        return $this->firestore
+            ->collection(self::COLLECTION)
+            ->document($id->value())
+            ->snapshot()
+            ->exists();
     }
 
     public function nextIdentity(): ContactId
@@ -261,8 +309,9 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
     {
         $location = $contact->location()?->toArray();
         $address = $contact->address()?->toArray();
+        $address = is_array($address) ? $address : [];
 
-        if (!$location && $address && isset($address['latitude'], $address['longitude'])) {
+        if (!$location && isset($address['latitude'], $address['longitude'])) {
             $location = [
                 'latitude' => $address['latitude'],
                 'longitude' => $address['longitude'],
@@ -287,13 +336,6 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
             'updatedAt' => new Timestamp($contact->updatedAt()),
         ];
 
-        if ($location) {
-            $data['geopoint'] = new GeoPoint(
-                (float) $location['latitude'],
-                (float) $location['longitude']
-            );
-        }
-
         return $data;
     }
 
@@ -313,7 +355,9 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
         $keywords = [];
 
         $keywords[] = $this->normalizeSearch($contact->name());
-        $keywords[] = $contact->slug()?->value();
+        if ($contact->slug()) {
+            $keywords[] = $contact->slug()->value();
+        }
         $keywords[] = $contact->email()->value();
 
         if ($contact->phone()) {
@@ -344,27 +388,20 @@ final class FirestoreContactRepository implements ContactRepositoryInterface
         }
 
         if (is_string($timestamp) && !empty($timestamp)) {
-            return (new \DateTimeImmutable($timestamp))->format('c');
+            $parsed = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $timestamp)
+                ?: \DateTimeImmutable::createFromFormat('Y-m-d H:i:sP', $timestamp)
+                ?: \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $timestamp, new \DateTimeZone('UTC'));
+
+            if ($parsed instanceof \DateTimeImmutable) {
+                return $parsed->format('c');
+            }
+
+            if ($this->logger) {
+                $this->logger->warning('Invalid timestamp value for contact', ['value' => $timestamp]);
+            }
         }
 
         return (new \DateTimeImmutable())->format('c');
     }
 
-    /**
-     * Calculate bounding box for radius search
-     *
-     * @return array{0: array{0: float, 1: float}, 1: array{0: float, 1: float}}
-     */
-    private function calculateBoundingBox(GeoLocation $center, float $radiusKm): array
-    {
-        $lat = $center->latitude();
-        $lon = $center->longitude();
-        $latDelta = rad2deg($radiusKm / 6371);
-        $lonDelta = rad2deg($radiusKm / (6371 * cos(deg2rad($lat))));
-
-        return [
-            [$lat - $latDelta, $lat + $latDelta],
-            [$lon - $lonDelta, $lon + $lonDelta],
-        ];
-    }
 }

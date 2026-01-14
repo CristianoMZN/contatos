@@ -7,6 +7,7 @@ namespace App\Application\UseCase\Contact;
 use App\Domain\Contact\Exception\ContactNotFoundException;
 use App\Domain\Contact\Repository\ContactRepositoryInterface;
 use App\Domain\Contact\ValueObject\ContactId;
+use App\Domain\Shared\Exception\UnauthorizedActionException;
 use App\Domain\User\ValueObject\UserId;
 use App\Infrastructure\Storage\FirebaseStorageService;
 
@@ -26,8 +27,12 @@ final class DeleteContactUseCase
         $id = ContactId::fromString($contactId);
         $contact = $this->contactRepository->findById($id);
 
-        if (!$contact || !$contact->userId()->equals(UserId::fromString($userId))) {
+        if (!$contact) {
             throw ContactNotFoundException::withId($id);
+        }
+
+        if (!$contact->userId()->equals(UserId::fromString($userId))) {
+            throw UnauthorizedActionException::forAction('delete');
         }
 
         if ($contact->photoUrl() && $this->storage) {

@@ -44,8 +44,12 @@ final class CreateContactUseCase
             $contact->assignToCategory(CategoryId::fromString($input->categoryId));
         }
 
-        if ($input->slug || $input->isPublic) {
-            $contact->setSlug(Slug::fromString($input->slug ?? $input->name));
+        if ($input->slug !== null) {
+            $contact->setSlug(Slug::fromString($input->slug));
+        } elseif ($input->isPublic) {
+            $baseSlug = Slug::fromString($input->name)->value();
+            $uniqueSlug = sprintf('%s-%s', $baseSlug, substr($contactId->value(), -6));
+            $contact->setSlug(Slug::fromString($uniqueSlug));
         }
 
         if ($input->address) {

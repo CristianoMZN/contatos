@@ -29,15 +29,36 @@ final class FirebaseStorageService
             $filename ?: basename($localFilePath)
         );
 
-        $bucket->upload(
-            fopen($localFilePath, 'r'),
-            [
-                'name' => $objectName,
-                'predefinedAcl' => 'publicRead',
-            ]
-        );
+        if (!is_file($localFilePath)) {
+            throw new \InvalidArgumentException(sprintf('File not found for upload: %s', $localFilePath));
+        }
 
-        return sprintf('https://storage.googleapis.com/%s/%s', $bucket->name(), $objectName);
+        $handle = fopen($localFilePath, 'rb');
+
+        if ($handle === false) {
+            throw new \RuntimeException(sprintf('Unable to open file for upload: %s', $localFilePath));
+        }
+
+        try {
+            $bucket->upload(
+                $handle,
+                [
+                    'name' => $objectName,
+                ]
+            );
+
+            $signedUrl = $bucket
+                ->object($objectName)
+                ->signedUrl(new \DateTimeImmutable('+1 day'));
+        } catch (\Throwable $exception) {
+            error_log(sprintf('Signed URL generation failed for %s: %s', $objectName, $exception->getMessage()));
+            $signedUrl = null;
+        } finally {
+            fclose($handle);
+        }
+
+        return $signedUrl
+            ?: sprintf('https://storage.googleapis.com/%s/%s', $bucket->name(), $objectName);
     }
 
     /**
@@ -46,13 +67,18 @@ final class FirebaseStorageService
     public function deleteContactPhoto(string $url): void
     {
         $bucket = $this->storage->getBucket($this->bucketName);
-        $parsed = parse_url($url, PHP_URL_PATH);
+        $parsedPath = parse_url($url, PHP_URL_PATH);
 
-        if (!$parsed) {
+        if (!$parsedPath) {
             return;
         }
 
-        $objectName = ltrim((string) $parsed, '/');
+        $objectName = ltrim((string) $parsedPath, '/');
+
+        if (str_starts_with($objectName, $bucket->name() . '/')) {
+            $objectName = substr($objectName, strlen($bucket->name()) + 1);
+        }
+
         $object = $bucket->object($objectName);
 
         if ($object->exists()) {
