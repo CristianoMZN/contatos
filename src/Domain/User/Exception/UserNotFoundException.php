@@ -4,15 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Exception;
 
-use DomainException;
+use App\Domain\Shared\Exception\DomainException;
+use App\Domain\Shared\ValueObject\Email;
+use App\Domain\User\ValueObject\UserId;
 
 /**
- * Exception thrown when user is not found
+ * Exception thrown when a user is not found
  */
-class UserNotFoundException extends DomainException
+final class UserNotFoundException extends DomainException
 {
-    public function __construct(string $message = 'User not found')
+    public static function withId(UserId $id): self
     {
-        parent::__construct($message);
+        return new self(sprintf('User with ID "%s" was not found', $id->value()));
+    }
+
+    public static function withEmail(Email $email): self
+    {
+        return new self(sprintf('User with email "%s" was not found', $email->value()));
     }
 }

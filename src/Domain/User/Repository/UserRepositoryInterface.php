@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Repository;
 
+use App\Domain\Shared\ValueObject\Email;
 use App\Domain\User\Entity\User;
 use App\Domain\User\ValueObject\UserId;
-use App\Domain\User\ValueObject\Email;
 
 /**
  * User Repository Interface
- * Defines contract for user persistence (implemented in Infrastructure layer)
+ * 
+ * Defines contract for User persistence
  */
 interface UserRepositoryInterface
 {
+    /**
+     * Save user (insert or update)
+     */
+    public function save(User $user): void;
+
     /**
      * Find user by ID
      */
@@ -25,24 +31,22 @@ interface UserRepositoryInterface
     public function findByEmail(Email $email): ?User;
 
     /**
-     * Save user (create or update)
-     */
-    public function save(User $user): void;
-
-    /**
-     * Delete user
+     * Delete a user
      */
     public function delete(UserId $id): void;
 
     /**
-     * Check if user exists by email
+     * Check if user exists
      */
-    public function existsByEmail(Email $email): bool;
+    public function exists(UserId $id): bool;
 
     /**
-     * Get all users with pagination
-     * 
-     * @return array{data: User[], total: int, page: int, perPage: int}
+     * Check if email is already registered
      */
-    public function findAll(int $page = 1, int $perPage = 50): array;
+    public function emailExists(Email $email): bool;
+
+    /**
+     * Generate next identity
+     */
+    public function nextIdentity(): UserId;
 }

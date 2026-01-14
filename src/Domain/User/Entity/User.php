@@ -4,137 +4,140 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Entity;
 
+use App\Domain\Shared\Entity\AggregateRoot;
+use App\Domain\Shared\ValueObject\Email;
+use App\Domain\User\Event\UserRegistered;
 use App\Domain\User\ValueObject\UserId;
-use App\Domain\User\ValueObject\Email;
-use App\Domain\User\ValueObject\DisplayName;
-use App\Domain\User\ValueObject\UserRole;
 use DateTimeImmutable;
 
 /**
- * User Entity
- * Represents a user in the domain with business logic
+ * User Aggregate Root
+ * 
+ * Represents a user in the system with authentication and profile information
  */
-class User
+final class User extends AggregateRoot
 {
-    /** @var UserRole[] */
-    private array $roles = [];
-    
-    private ?string $photoURL = null;
-    private bool $emailVerified = false;
-
     private function __construct(
         private UserId $id,
         private Email $email,
-        private DisplayName $displayName,
-        private DateTimeImmutable $createdAt
+        private string $displayName,
+        private string $passwordHash,
+        private bool $isActive,
+        private DateTimeImmutable $createdAt,
+        private DateTimeImmutable $updatedAt
     ) {
-        // Default role is user
-        $this->roles = [UserRole::user()];
     }
 
     /**
-     * Create a new user (for registration)
+     * Register a new user
      */
-    public static function create(
+    public static function register(
         UserId $id,
         Email $email,
-        DisplayName $displayName
+        string $displayName,
+        string $passwordHash
     ): self {
-        return new self(
+        $user = new self(
             $id,
             $email,
             $displayName,
+            $passwordHash,
+            true,
+            new DateTimeImmutable(),
             new DateTimeImmutable()
         );
+
+        $user->recordEvent(new UserRegistered($id, $email, $displayName));
+
+        return $user;
     }
 
     /**
-     * Reconstitute user from persistence
+     * Reconstruct User from persistence
      */
     public static function fromPrimitives(
         string $id,
         string $email,
         string $displayName,
+        string $passwordHash,
+        bool $isActive,
         string $createdAt,
-        array $roles = [],
-        ?string $photoURL = null,
-        bool $emailVerified = false
+        string $updatedAt
     ): self {
-        $user = new self(
+        return new self(
             UserId::fromString($id),
             Email::fromString($email),
-            DisplayName::fromString($displayName),
-            new DateTimeImmutable($createdAt)
+            $displayName,
+            $passwordHash,
+            $isActive,
+            new DateTimeImmutable($createdAt),
+            new DateTimeImmutable($updatedAt)
         );
-
-        $user->roles = array_map(
-            fn(string $role) => UserRole::fromString($role),
-            $roles ?: ['user']
-        );
-        $user->photoURL = $photoURL;
-        $user->emailVerified = $emailVerified;
-
-        return $user;
     }
 
-    // Business methods
-
-    public function changeDisplayName(DisplayName $newDisplayName): void
+    /**
+     * Change email address
+     */
+    public function changeEmail(Email $newEmail): void
     {
+        if ($this->email->equals($newEmail)) {
+            return;
+        }
+
+        $this->email = $newEmail;
+        $this->updatedAt = new DateTimeImmutable();
+    }
+
+    /**
+     * Update display name
+     */
+    public function updateDisplayName(string $newDisplayName): void
+    {
+        if (empty($newDisplayName)) {
+            throw new \InvalidArgumentException('Display name cannot be empty');
+        }
+
+        if ($this->displayName === $newDisplayName) {
+            return;
+        }
+
         $this->displayName = $newDisplayName;
+        $this->updatedAt = new DateTimeImmutable();
     }
 
-    public function verifyEmail(): void
+    /**
+     * Change password
+     */
+    public function changePassword(string $newPasswordHash): void
     {
-        $this->emailVerified = true;
+        $this->passwordHash = $newPasswordHash;
+        $this->updatedAt = new DateTimeImmutable();
     }
 
-    public function grantRole(UserRole $role): void
+    /**
+     * Deactivate user account
+     */
+    public function deactivate(): void
     {
-        foreach ($this->roles as $existingRole) {
-            if ($existingRole->equals($role)) {
-                return; // Already has this role
-            }
+        if (!$this->isActive) {
+            return;
         }
-        $this->roles[] = $role;
+
+        $this->isActive = false;
+        $this->updatedAt = new DateTimeImmutable();
     }
 
-    public function revokeRole(UserRole $role): void
+    /**
+     * Reactivate user account
+     */
+    public function reactivate(): void
     {
-        $this->roles = array_filter(
-            $this->roles,
-            fn(UserRole $r) => !$r->equals($role)
-        );
-
-        // Ensure user always has at least 'user' role
-        if (empty($this->roles)) {
-            $this->roles = [UserRole::user()];
+        if ($this->isActive) {
+            return;
         }
-    }
 
-    public function hasRole(UserRole $role): bool
-    {
-        foreach ($this->roles as $userRole) {
-            if ($userRole->equals($role)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public function isAdmin(): bool
-    {
-        return $this->hasRole(UserRole::admin());
-    }
-
-    public function isPremium(): bool
-    {
-        return $this->hasRole(UserRole::premium());
-    }
-
-    public function updatePhotoURL(?string $url): void
-    {
-        $this->photoURL = $url;
+        $this->isActive = true;
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     // Getters
@@ -149,33 +152,19 @@ class User
         return $this->email;
     }
 
-    public function displayName(): DisplayName
+    public function displayName(): string
     {
         return $this->displayName;
     }
 
-    /** @return UserRole[] */
-    public function roles(): array
+    public function passwordHash(): string
     {
-        return $this->roles;
+        return $this->passwordHash;
     }
 
-    public function rolesAsStrings(): array
+    public function isActive(): bool
     {
-        return array_map(
-            fn(UserRole $role) => $role->toString(),
-            $this->roles
-        );
-    }
-
-    public function photoURL(): ?string
-    {
-        return $this->photoURL;
-    }
-
-    public function isEmailVerified(): bool
-    {
-        return $this->emailVerified;
+        return $this->isActive;
     }
 
     public function createdAt(): DateTimeImmutable
@@ -183,19 +172,16 @@ class User
         return $this->createdAt;
     }
 
-    /**
-     * Convert to array for persistence or API response
-     */
-    public function toArray(): array
+    public function updatedAt(): DateTimeImmutable
     {
-        return [
-            'id' => $this->id->toString(),
-            'email' => $this->email->toString(),
-            'displayName' => $this->displayName->toString(),
-            'roles' => $this->rolesAsStrings(),
-            'photoURL' => $this->photoURL,
-            'emailVerified' => $this->emailVerified,
-            'createdAt' => $this->createdAt->format('c'),
-        ];
+        return $this->updatedAt;
+    }
+
+    /**
+     * Compare by identity
+     */
+    public function equals(self $other): bool
+    {
+        return $this->id->equals($other->id);
     }
 }
