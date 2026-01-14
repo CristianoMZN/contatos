@@ -7,6 +7,15 @@ use App\Core\Model;
 /**
  * User Model
  * Handles user authentication and management
+ * 
+ * @deprecated This model uses legacy MySQL/PDO and will be replaced by Domain\Entity\User
+ *             with Firebase Authentication integration.
+ *             See docs/ARCHITECTURE.md and docs/FIREBASE_AUTH.md for the new approach.
+ * 
+ * @todo Migrate to Domain\Entity\User + Firebase Authentication
+ * @see docs/ARCHITECTURE.md
+ * @see docs/FIREBASE_AUTH.md
+ * @see docs/DDD_GUIDE.md
  */
 class User extends Model
 {

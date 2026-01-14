@@ -1,4 +1,4 @@
-# contatos
+## contatos
 
 Resumo curto
 - Serviço simples para gerenciar contatos (CRUD).
@@ -10,8 +10,8 @@ Por que este README ajuda o Copilot a gerar PRs melhores
 
 Conteúdo recomendado (já incluído neste repositório)
 1. Visão Geral
-- Stack: PHP (8.3+/8.4), Composer, PHPUnit
-- Infraestrutura: Docker, Nginx, PHP-FPM, MariaDB
+- Stack: PHP (8.3+/8.4), Composer, PHPUnit, Symfony 7.x
+- Infraestrutura: Docker, Nginx, PHP-FPM, **Firebase/Firestore** (banco de dados), Firebase Authentication
 - CI/CD: GitHub Actions (CI local), Google Cloud Build (CD)
 - Componentes: src/ (lógica), public/ (entry), tests/ (unit), .github/ (workflows)
 
@@ -22,13 +22,14 @@ Conteúdo recomendado (já incluído neste repositório)
 - Iniciar ambiente:
   ```bash
   cp .env.example .env
+  # Configure Firebase credentials in .env
   docker-compose up -d
   ```
 - Acessar: http://localhost:8080
 - Ver guia completo: [DOCKER.md](DOCKER.md)
 
 ### Opção 2: PHP Nativo
-- Requisitos: PHP 7.4+, Composer
+- Requisitos: PHP 8.3+, Composer
 - Instalar dependências:
   - composer install
 - Rodar servidor local:
@@ -41,12 +42,13 @@ Conteúdo recomendado (já incluído neste repositório)
 
 3. Estrutura do Código
 - public/         -> entry (index.php)
-- src/            -> classes e serviços
+- src/            -> classes e serviços (em migração para Clean Architecture)
 - tests/          -> testes PHPUnit
 - .github/        -> templates e workflows
 
 4. Contratos e Modelos de Dados
 - Ex.: POST /contacts -> { "name": "João", "email":"a@b.com" } -> 201 + body com id
+- Dados armazenados no **Firestore** (NoSQL)
 - Inclua schemas/fixtures em tests/fixtures/ quando necessário
 
 5. Regras de Código e Estilo

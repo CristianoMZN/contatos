@@ -7,6 +7,15 @@ use App\Core\Model;
 /**
  * Company Category Model
  * Handles business categories for contact classification
+ * 
+ * @deprecated This model uses legacy MySQL/PDO and will be replaced by Domain\Entity\Category
+ *             and Infrastructure\Repository\FirestoreCategoryRepository.
+ *             See docs/ARCHITECTURE.md and docs/DDD_GUIDE.md for the new approach.
+ * 
+ * @todo Migrate to Domain\Entity\Category + FirestoreCategoryRepository
+ * @see docs/ARCHITECTURE.md
+ * @see docs/FIREBASE_SETUP.md
+ * @see docs/DDD_GUIDE.md
  */
 class CompanyCategory extends Model
 {

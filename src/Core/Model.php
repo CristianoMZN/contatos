@@ -5,6 +5,14 @@ namespace App\Core;
 /**
  * Base Model Class
  * All models should extend this class
+ * 
+ * @deprecated This class uses legacy MySQL/PDO and will be removed in a future version.
+ *             New code should use Firestore repositories following Clean Architecture patterns.
+ *             See docs/ARCHITECTURE.md and docs/DDD_GUIDE.md for the new approach.
+ * 
+ * @todo Migrate to Domain/Repository pattern with Firestore implementation
+ * @see docs/ARCHITECTURE.md
+ * @see docs/FIREBASE_SETUP.md
  */
 abstract class Model
 {
@@ -16,7 +24,18 @@ abstract class Model
     
     public function __construct()
     {
-        $this->db = Database::getInstance();
+        // NOTE: Database class has been removed as part of MySQL deprecation
+        // This will throw an error if instantiated. Legacy code needs migration.
+        trigger_error(
+            'Model class is deprecated and relies on removed Database class. ' .
+            'Migrate to Firestore repositories. See docs/ARCHITECTURE.md',
+            E_USER_DEPRECATED
+        );
+        
+        // Keeping reference for compatibility, but this will fail
+        if (class_exists(Database::class)) {
+            $this->db = Database::getInstance();
+        }
     }
     
     public function find(int $id): ?array

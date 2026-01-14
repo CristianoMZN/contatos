@@ -21,7 +21,8 @@ Complete guide for Docker infrastructure and CI/CD deployment of the Contatos ap
 # 1. Copy environment file
 cp .env.example .env
 
-# 2. Edit .env with your settings (optional for dev)
+# 2. Configure Firebase credentials
+# Add your Firebase service account JSON and update .env
 nano .env
 
 # 3. Start development environment
@@ -29,7 +30,6 @@ docker-compose up -d
 
 # 4. Access the application
 # - App: http://localhost:8080
-# - Adminer (DB tool): http://localhost:8081
 
 # 5. View logs
 docker-compose logs -f app
@@ -37,6 +37,8 @@ docker-compose logs -f app
 # 6. Stop environment
 docker-compose down
 ```
+
+**Note:** Firebase/Firestore is used for data storage. See [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) for configuration.
 
 ### Production Deployment
 
@@ -46,7 +48,7 @@ See [Production Deployment](#production-deployment) section.
 
 ### Services
 
-The application uses a multi-container architecture:
+The application uses a containerized architecture:
 
 ```
 ┌─────────────────────────────────────────┐
@@ -54,21 +56,17 @@ The application uses a multi-container architecture:
 │  - PHP 8.4 with extensions              │
 │  - Nginx web server                     │
 │  - Supervisord for process management   │
-└─────────────────┬───────────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────┐
-│         MariaDB (db)                    │
-│  - Version 11.2                         │
-│  - Persistent data storage              │
+│  - Firebase/Firestore integration       │
 └─────────────────────────────────────────┘
 
 Development Only:
 ┌─────────────────────────────────────────┐
 │         Adminer (adminer)               │
-│  - Database management UI               │
+│  - Database management UI (deprecated)  │
 └─────────────────────────────────────────┘
 ```
+
+**Note:** The application now uses Firebase/Firestore for data storage. See [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) for configuration.
 
 ### Container Structure
 
@@ -81,9 +79,10 @@ app container:
 
 ### Volumes
 
-- `db-data`: MariaDB data persistence
 - `uploads-data`: User uploaded files
 - `storage-data`: Application cache and sessions
+
+**Note:** Database persistence is handled by Firebase/Firestore (cloud-based).
 
 ## Development Setup
 
@@ -98,9 +97,9 @@ The development environment includes:
 
 - **Live code reloading**: Source code mounted as volume
 - **Xdebug**: Debugging support on port 9003
-- **Adminer**: Database management UI
 - **Error display**: Full error reporting enabled
 - **No Opcache validation**: Immediate code changes
+- **Firebase Emulator**: Optional local Firestore emulation (see [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md))
 
 ### Starting Development Environment
 
@@ -117,9 +116,6 @@ docker-compose -f docker-compose.yml -f docker-compose.override.yml up -d --buil
 ```bash
 # Access app container shell
 docker-compose exec app bash
-
-# Run migrations
-docker-compose exec app php vendor/bin/phinx migrate
 
 # Install new dependencies
 docker-compose exec app composer require vendor/package
@@ -237,16 +233,20 @@ Configure these in: `Settings → Secrets and variables → Actions`
 | `APP_URL` | Application URL | `http://localhost` | `https://contatos.example.com` |
 | `APP_PORT` | External port | `8080` | `8080`, `80`, `443` |
 
-#### Database Settings
+#### Firebase / GCP Settings
 
-| Variable | Description | Default | Example |
-|----------|-------------|---------|---------|
-| `DB_HOST` | Database host | `db` | `db`, `mysql.example.com` |
-| `DB_PORT` | Database port | `3306` | `3306` |
-| `DB_DATABASE` | Database name | `contatos` | `contatos` |
-| `DB_USERNAME` | Database user | `contatos` | `contatos` |
-| `DB_PASSWORD` | Database password | - | `secure_password` |
-| `DB_ROOT_PASSWORD` | Root password | - | `root_password` |
+| Variable | Description | Required | Example |
+|----------|-------------|----------|---------|
+| `FIREBASE_PROJECT_ID` | Firebase project ID | Yes | `contatos-app` |
+| `FIREBASE_CREDENTIALS` | Path to service account JSON | Yes | `/run/secrets/firebase-adminsdk.json` |
+| `FIREBASE_DATABASE_URL` | Realtime Database URL | Yes | `https://contatos-app.firebaseio.com` |
+| `FIREBASE_STORAGE_BUCKET` | Storage bucket name | Yes | `contatos-app.appspot.com` |
+| `GCP_PROJECT_ID` | GCP project ID | Yes | `contatos-app` |
+| `GCP_LOCATION` | GCP region | Yes | `southamerica-east1` |
+| `FIREBASE_AUTH_ENABLED` | Enable Firebase Auth | No | `true`, `false` |
+| `FIREBASE_API_KEY` | Web API key | No | `AIzaSy...` |
+
+See [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) for complete Firebase configuration guide.
 
 #### Container Registry
 
@@ -470,21 +470,25 @@ docker-compose exec app curl http://localhost:8080/fpm-status
 # Decrease if using too much memory
 ```
 
-### Database issues
+### Data Management
+
+For Firebase/Firestore data operations:
 
 ```bash
-# Access database
-docker-compose exec db mysql -u root -p
+# Export Firestore data (using gcloud CLI)
+gcloud firestore export gs://your-bucket/backups/$(date +%Y%m%d)
 
-# Or use Adminer (dev only)
-# http://localhost:8081
+# Import Firestore data
+gcloud firestore import gs://your-bucket/backups/20240101
 
-# Backup database
-docker-compose exec db mysqldump -u root -p contatos > backup.sql
+# View Firestore data in console
+# https://console.firebase.google.com/project/YOUR_PROJECT_ID/firestore
 
-# Restore database
-docker-compose exec -T db mysql -u root -p contatos < backup.sql
+# Check Firebase connectivity from container
+docker-compose exec app php -r "echo 'Firebase SDK: ' . (class_exists('Kreait\Firebase\Factory') ? 'OK' : 'Missing') . PHP_EOL;"
 ```
+
+See [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) for complete Firebase data management guide.
 
 ### Deployment failures
 
@@ -557,14 +561,22 @@ Consider adding:
 ### Backup Strategy
 
 ```bash
-# Automated backup script
+# Automated Firestore backup script
 #!/bin/bash
-docker-compose exec -T db mysqldump -u root -p$DB_ROOT_PASSWORD contatos | \
-  gzip > "backup-$(date +%Y%m%d-%H%M%S).sql.gz"
+# Export Firestore data to Cloud Storage
+gcloud firestore export gs://your-backup-bucket/backups/$(date +%Y%m%d-%H%M%S)
 
-# Upload to S3/backup service
-aws s3 cp backup-*.sql.gz s3://your-bucket/backups/
+# Backup file uploads
+docker run --rm \
+  -v contatos_uploads-data:/data \
+  -v $(pwd):/backup \
+  alpine tar czf /backup/uploads-$(date +%Y%m%d-%H%M%S).tar.gz /data
+
+# Upload to additional backup service if needed
+# aws s3 cp uploads-*.tar.gz s3://your-bucket/backups/
 ```
+
+Configure Cloud Scheduler for automated Firestore exports. See [docs/FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) for details.
 
 ## Security Best Practices
 
@@ -589,7 +601,8 @@ For issues or questions:
 
 ---
 
-**Last Updated:** 2025-11-11
+**Last Updated:** 2026-01-14
 **Docker Version:** 20.10+
 **PHP Version:** 8.4
 **Compose Version:** 2.0+
+**Database:** Firebase/Firestore (cloud-based)
