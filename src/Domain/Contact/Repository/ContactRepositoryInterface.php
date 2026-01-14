@@ -6,6 +6,7 @@ namespace App\Domain\Contact\Repository;
 
 use App\Domain\Contact\Entity\Contact;
 use App\Domain\Contact\ValueObject\ContactId;
+use App\Domain\Shared\ValueObject\GeoLocation;
 use App\Domain\User\ValueObject\UserId;
 
 /**
@@ -30,7 +31,13 @@ interface ContactRepositoryInterface
      * 
      * @return Contact[]
      */
-    public function findByUser(UserId $userId, int $limit = 50, int $offset = 0): array;
+    public function findByUser(
+        UserId $userId,
+        int $limit = 50,
+        int $offset = 0,
+        ?string $search = null,
+        ?string $categoryId = null
+    ): array;
 
     /**
      * Find favorite contacts for a user
@@ -44,7 +51,14 @@ interface ContactRepositoryInterface
      * 
      * @return Contact[]
      */
-    public function findPublicContacts(int $limit = 50, ?string $cursor = null): array;
+    public function findPublicContacts(
+        int $limit = 50,
+        ?string $cursor = null,
+        ?string $categoryId = null,
+        ?string $search = null,
+        ?GeoLocation $center = null,
+        ?float $radiusKm = null
+    ): array;
 
     /**
      * Find contact by slug (public contacts only)
