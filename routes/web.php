@@ -38,6 +38,9 @@ $router->post('/contacts/{slug}/delete', 'ContactController@destroy', ['Auth']);
 $router->get('/api/contacts', 'ApiController@contacts');
 $router->get('/api/contacts/search', 'ApiController@searchContacts');
 
+// Payment webhooks
+$router->post('/webhooks/asaas', 'AsaasWebhookController@handle');
+
 // SEO routes
 $router->get('/sitemap.xml', 'SeoController@sitemap');
 

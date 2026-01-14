@@ -40,7 +40,8 @@
         "google/cloud-secret-manager": "^1.0"
     },
     "require-dev": {
-        "robmorgan/phinx": "^0.16"
+        "robmorgan/phinx": "^0.16",
+        "phpunit/phpunit": "^9.6"
     },
     "config": {
         "allow-plugins": {
