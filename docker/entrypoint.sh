@@ -34,30 +34,6 @@ else
     echo -e "${RED}Warning: PHP-FPM pool template not found${NC}"
 fi
 
-# Wait for database if DB_HOST is set
-if [ -n "$DB_HOST" ]; then
-    echo -e "${YELLOW}Waiting for database at $DB_HOST:${DB_PORT:-3306}...${NC}"
-    timeout=60
-    while ! nc -z "$DB_HOST" "${DB_PORT:-3306}" 2>/dev/null; do
-        timeout=$((timeout - 1))
-        if [ $timeout -le 0 ]; then
-            echo -e "${RED}Database connection timeout${NC}"
-            break
-        fi
-        sleep 1
-    done
-    if nc -z "$DB_HOST" "${DB_PORT:-3306}" 2>/dev/null; then
-        echo -e "${GREEN}Database is ready!${NC}"
-    fi
-fi
-
-# Run database migrations if enabled
-if [ "$RUN_MIGRATIONS" = "true" ] && [ -f "/var/www/html/phinx.php" ]; then
-    echo -e "${YELLOW}Running database migrations...${NC}"
-    php vendor/bin/phinx migrate -c phinx.php
-    echo -e "${GREEN}Migrations completed${NC}"
-fi
-
 # Clear cache if needed
 if [ "$CLEAR_CACHE" = "true" ]; then
     echo -e "${YELLOW}Clearing cache...${NC}"
