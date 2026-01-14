@@ -111,3 +111,4 @@ Este projeto está em processo de refatoração para uma arquitetura moderna seg
 - **[QUICK_START.md](QUICK_START.md)** - Início rápido
 - **[RECOMMENDATIONS.md](RECOMMENDATIONS.md)** - Recomendações gerais
 - **[docs/GITHUB_PAGES_SETUP.md](docs/GITHUB_PAGES_SETUP.md)** - Configuração do GitHub Pages
+- **[ASAAS_INTEGRATION.md](docs/ASAAS_INTEGRATION.md)** - Integração de billing/assinaturas com ASAAS
