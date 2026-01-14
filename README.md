@@ -12,7 +12,7 @@ Conteúdo recomendado (já incluído neste repositório)
 1. Visão Geral
 - Stack: PHP (8.3+/8.4), Composer, PHPUnit
 - Infraestrutura: Docker, Nginx, PHP-FPM, MariaDB
-- CI/CD: GitHub Actions (build, push, deploy)
+- CI/CD: GitHub Actions (CI local), Google Cloud Build (CD)
 - Componentes: src/ (lógica), public/ (entry), tests/ (unit), .github/ (workflows)
 
 2. Como rodar localmente
