@@ -8,6 +8,11 @@
             "App\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": ">=7.4",
         "symfony/framework-bundle": "^7.0",
