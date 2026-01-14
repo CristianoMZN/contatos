@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Contatos - Symfony UX{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        body {
+            background: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        [data-bs-theme="dark"] .glass {
+            background: rgba(30, 32, 36, 0.92);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
+</head>
+<body class="min-vh-100 d-flex flex-column">
+    <header class="border-bottom sticky-top bg-body">
+        <div class="container py-3 d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-primary-subtle text-primary-emphasis">Symfony UX</span>
+                <strong>Contatos</strong>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="themeToggle" data-theme-toggle>
+                    <label class="form-check-label" for="themeToggle">Tema escuro</label>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-fill">
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="border-top py-3 mt-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <small class="text-secondary">UX Components + Turbo Frames + Live Search</small>
+            <small class="text-secondary">Atualizado em {{ "now"|date("d/m/Y H:i") }}</small>
+        </div>
+    </footer>
+
+    <script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
+    <script src="{{ asset('js/ux.js') }}"></script>
+</body>
+</html>

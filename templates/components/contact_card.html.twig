@@ -1,0 +1,60 @@
+{% set mode = this.displayMode() %}
+<article class="card h-100 border-0 shadow-sm {{ mode == 'list' ? 'card-body p-0 border-0' : '' }}">
+    <div class="card-body p-4 d-flex flex-column gap-3">
+        <div class="d-flex gap-3 align-items-center">
+            <div class="rounded-circle bg-primary-subtle text-primary-emphasis d-flex align-items-center justify-content-center fw-bold" style="width:56px; height:56px;">
+                {{ this.initials() }}
+            </div>
+            <div class="flex-fill">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <h3 class="h6 mb-0">{{ contact.name() }}</h3>
+                    {% if contact.isFavorite() %}
+                        <span class="badge text-bg-warning">Favorito</span>
+                    {% endif %}
+                    {% if contact.isPublic() %}
+                        <span class="badge text-bg-success">Público</span>
+                    {% else %}
+                        <span class="badge text-bg-secondary">Privado</span>
+                    {% endif %}
+                </div>
+                <p class="text-secondary mb-0 small">Atualizado em {{ contact.updatedAt().format('d/m/Y H:i') }}</p>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="text-secondary">📧</span>
+                <a class="text-decoration-none" href="mailto:{{ contact.email().toString() }}">{{ contact.email().toString() }}</a>
+            </div>
+            {% if this.phone() %}
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-secondary">📞</span>
+                    <a class="text-decoration-none" href="tel:{{ contact.phone().value() }}">{{ this.phone() }}</a>
+                </div>
+            {% endif %}
+            {% if this.location() %}
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-secondary">📍</span>
+                    <span class="text-secondary">{{ this.location() }}</span>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if contact.notes() %}
+            {% set notes = contact.notes() %}
+            <div class="p-3 rounded-3 bg-body-secondary small text-secondary">
+                {% if notes|length > 140 %}
+                    {{ notes|slice(0, 140) ~ '…' }}
+                {% else %}
+                    {{ notes }}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if contact.categoryId() %}
+            <div>
+                <span class="badge bg-primary-subtle text-primary-emphasis">Categoria {{ contact.categoryId().value() }}</span>
+            </div>
+        {% endif %}
+    </div>
+</article>
