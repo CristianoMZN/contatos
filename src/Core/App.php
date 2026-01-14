@@ -5,6 +5,13 @@ namespace App\Core;
 /**
  * Main Application Class
  * Handles application bootstrapping and core functionality
+ * 
+ * @deprecated This class uses legacy MySQL/PDO and will be replaced by Symfony's Kernel.
+ *             New code should use Symfony's Dependency Injection Container.
+ *             See docs/ARCHITECTURE.md for the new approach.
+ * 
+ * @todo Migrate to Symfony Kernel and DI Container
+ * @see docs/ARCHITECTURE.md
  */
 class App
 {
@@ -41,10 +48,8 @@ class App
     
     private function initializeServices(): void
     {
-        // Initialize database connection
-        $this->container['db'] = function() {
-            return Database::getInstance();
-        };
+        // NOTE: Database service initialization removed as part of MySQL deprecation
+        // This service container will be replaced by Symfony's DI Container
         
         // Initialize session manager
         $this->container['session'] = function() {

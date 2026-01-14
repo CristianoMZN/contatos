@@ -7,6 +7,15 @@ use App\Core\Model;
 /**
  * Contact Model
  * Handles contact management and relationships
+ * 
+ * @deprecated This model uses legacy MySQL/PDO and will be replaced by Domain\Entity\Contact
+ *             and Infrastructure\Repository\FirestoreContactRepository.
+ *             See docs/ARCHITECTURE.md and docs/DDD_GUIDE.md for the new approach.
+ * 
+ * @todo Migrate to Domain\Entity\Contact + FirestoreContactRepository
+ * @see docs/ARCHITECTURE.md
+ * @see docs/FIREBASE_SETUP.md
+ * @see docs/DDD_GUIDE.md
  */
 class Contact extends Model
 {
