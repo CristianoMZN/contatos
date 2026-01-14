@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agenda Pública - Contatos{% endblock %}
+
+{% block body %}
+<section class="py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-12">
+                <div class="glass rounded-4 p-4 shadow-sm">
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center">
+                        <div>
+                            <p class="text-primary fw-semibold mb-1 text-uppercase small">Apresentação</p>
+                            <h1 class="h3 mb-1">Agenda pública com Symfony UX</h1>
+                            <p class="text-secondary mb-0">Turbo Frames + Live Components + pesquisa em tempo real.</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary" id="btnUseLocation">
+                                <span class="me-2">📍</span> Usar minha localização
+                            </button>
+                            <div class="btn-group" role="group" aria-label="Modo de visualização">
+                                <input type="radio" class="btn-check" name="viewMode" id="viewGrid" value="grid" {% if viewMode == 'grid' %}checked{% endif %}>
+                                <label class="btn btn-outline-secondary" for="viewGrid">Cards</label>
+                                <input type="radio" class="btn-check" name="viewMode" id="viewList" value="list" {% if viewMode == 'list' %}checked{% endif %}>
+                                <label class="btn btn-outline-secondary" for="viewList">Lista</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="glass rounded-4 p-4 shadow-sm">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-12 col-md-5">
+                            <label for="searchInput" class="form-label text-secondary small text-uppercase mb-1">Busca em tempo real</label>
+                            <div class="input-group">
+                                <span class="input-group-text">🔍</span>
+                                <input
+                                    id="searchInput"
+                                    type="search"
+                                    class="form-control form-control-lg"
+                                    placeholder="Buscar por nome, e-mail ou telefone"
+                                    value="{{ search }}"
+                                    data-mask="phone">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <label for="categoryFilter" class="form-label text-secondary small text-uppercase mb-1">Categoria</label>
+                            <select id="categoryFilter" class="form-select form-select-lg">
+                                <option value="">Todas</option>
+                                <option value="favorites" {% if categoryId == 'favorites' %}selected{% endif %}>Favoritos</option>
+                                <option value="business" {% if categoryId == 'business' %}selected{% endif %}>Negócios</option>
+                                <option value="family" {% if categoryId == 'family' %}selected{% endif %}>Família</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label for="radiusFilter" class="form-label text-secondary small text-uppercase mb-1">Raio (km)</label>
+                            <input
+                                type="number"
+                                id="radiusFilter"
+                                class="form-control"
+                                min="1"
+                                max="200"
+                                step="1"
+                                value="{{ radiusKm ?? 25 }}">
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <label class="form-label text-secondary small text-uppercase mb-1">Geo status</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-info-subtle text-info-emphasis" id="geoStatus">Geo desabilitado</span>
+                                <button class="btn btn-link btn-sm text-decoration-none text-secondary" id="btnClearGeo">limpar</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="latInput" value="{{ latitude }}">
+                        <input type="hidden" id="lngInput" value="{{ longitude }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <turbo-frame
+                    id="public-contact-frame"
+                    src="{{ path('public_contacts_frame', {
+                        q: search,
+                        category: categoryId,
+                        radius: radiusKm,
+                        lat: latitude,
+                        lng: longitude,
+                        view: viewMode,
+                        limit: limit
+                    }) }}"
+                    data-src-base="{{ path('public_contacts_frame') }}"
+                    data-initial-search="{{ search }}"
+                    data-limit="{{ limit }}">
+                    {% include 'contacts/_public_list_frame.html.twig' with {
+                        search: search,
+                        categoryId: categoryId,
+                        radiusKm: radiusKm,
+                        latitude: latitude,
+                        longitude: longitude,
+                        viewMode: viewMode,
+                        limit: limit
+                    } %}
+                </turbo-frame>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
