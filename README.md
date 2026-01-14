@@ -1,4 +1,4 @@
-## contatos
+# contatos
 
 Resumo curto
 - Serviço simples para gerenciar contatos (CRUD).

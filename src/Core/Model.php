@@ -33,7 +33,7 @@ abstract class Model
         );
         
         // Keeping reference for compatibility, but this will fail
-        if (class_exists('App\\Core\\Database')) {
+        if (class_exists('App\Core\Database')) {
             $this->db = \App\Core\Database::getInstance();
         }
     }
