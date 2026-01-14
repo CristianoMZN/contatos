@@ -1,0 +1,6 @@
+# Load routes from attribute/annotations in controllers
+controllers:
+    resource:
+        path: ../src/Presentation/Web/Controller/
+        namespace: App\Presentation\Web\Controller
+    type: attribute
