@@ -41,6 +41,7 @@ final class AsaasWebhookController extends Controller
 
         if (!is_array($payload)) {
             $this->json(['success' => false, 'message' => 'Invalid payload'], 400);
+            return;
         }
 
         $updated = $this->useCase->execute($payload);

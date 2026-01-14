@@ -55,7 +55,11 @@ final class AsaasClient
         }
 
         if ($status >= 400) {
-            $message = $decoded['errors'][0]['description'] ?? $response;
+            $message = $response;
+
+            if (!empty($decoded['errors']) && isset($decoded['errors'][0]['description'])) {
+                $message = (string) $decoded['errors'][0]['description'];
+            }
             throw new RuntimeException(sprintf('ASAAS error (%d): %s', $status, $message));
         }
 
